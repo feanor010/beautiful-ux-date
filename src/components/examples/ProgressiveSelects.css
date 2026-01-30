@@ -1,0 +1,146 @@
+.progressive-selects {
+  padding: 2rem;
+  background: #f5f5f5;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.timer-container {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.timer-bar {
+  width: 100%;
+  height: 30px;
+  background: #e0e0e0;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid #dc3545;
+  position: relative;
+}
+
+.timer-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #dc3545 0%, #ff6b6b 100%);
+  transition: width 0.1s linear;
+  border-radius: 15px;
+}
+
+.charge-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.charge-button:hover {
+  background: #218838;
+  transform: scale(1.05);
+}
+
+.charge-button.charging {
+  background: #20c997;
+  animation: pulse 0.2s ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.select-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.select-stage label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.select-field {
+  padding: 0.75rem 1rem;
+  font-size: 18px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  min-width: 200px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.select-field:hover {
+  border-color: #bbb;
+}
+
+.select-field:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.button-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.button-instruction {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.round-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid #333;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.round-button.red {
+  background: #dc3545;
+}
+
+.round-button.green {
+  background: #28a745;
+}
+
+.round-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.round-button:active {
+  transform: scale(0.95);
+}

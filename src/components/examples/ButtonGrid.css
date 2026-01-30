@@ -1,0 +1,93 @@
+.button-grid {
+  padding: 2rem;
+  background: #f5f5f5;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.date-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.1rem;
+}
+
+.date-display .placeholder {
+  color: #ccc;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.date-display .filled {
+  color: #333;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.grid-button {
+  padding: 0.75rem;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.grid-button:hover {
+  background: #f0f0f0;
+  border-color: #bbb;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.reshuffle-button {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.reshuffle-button:hover {
+  background: #0056b3;
+}
+
+.reset-button {
+  flex: 1;
+  padding: 0.75rem;
+  font-size: 16px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.reset-button:hover {
+  background: #c82333;
+}

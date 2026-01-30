@@ -1,0 +1,68 @@
+.reverse-selects {
+  padding: 2rem;
+  background: #f5f5f5;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.reverse-selects h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.description {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.selects-container {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.select-group label {
+  font-weight: 500;
+  color: #555;
+  font-size: 14px;
+}
+
+.select-field {
+  padding: 0.75rem 1rem;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  min-width: 150px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.select-field:hover {
+  border-color: #bbb;
+}
+
+.select-field:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.result {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  color: #333;
+}
