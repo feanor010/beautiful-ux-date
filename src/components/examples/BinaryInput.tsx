@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import './BinaryInput.css';
 import { Fireworks } from '../Fireworks';
-import { isSpecialDate } from '../../utils/dateCheck';
 import type { DateInputExampleProps } from '../../types';
+import {getCelebrationMessage} from "../../utils/celebrations.ts";
 
 const BITS = [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
 
@@ -11,11 +11,16 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
     const [stage, setStage] = useState<'day' | 'month' | 'year' | 'done'>('day');
     const [values, setValues] = useState({ day: '', month: '', year: '' });
     const [showFireworks, setShowFireworks] = useState(false);
-    const [shake, setShake] = useState(false);
+    const [isAlarm, setIsAlarm] = useState(false);
 
     const currentSum = switches.reduce((acc, isOn, index) => {
         return acc + (isOn ? BITS[index] : 0);
     }, 0);
+
+    const triggerAlarm = () => {
+        setIsAlarm(true);
+        setTimeout(() => setIsAlarm(false), 400);
+    };
 
     useEffect(() => {
         if (stage === 'done') return;
@@ -31,6 +36,7 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
                         const randomActiveIndex = activeIndices[Math.floor(Math.random() * activeIndices.length)];
                         const newSwitches = [...prev];
                         newSwitches[randomActiveIndex] = false;
+                        triggerAlarm();
                         return newSwitches;
                     }
                 }
@@ -53,19 +59,20 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
         setValues({ day: '', month: '', year: '' });
         setStage('day');
         setSwitches(new Array(12).fill(false));
+        setIsAlarm(false);
         onDateCorrect?.(false);
     }, [onDateCorrect]);
 
     const checkFinalDate = (finalValues: { day: string, month: string, year: string }) => {
         const dateStr = `${finalValues.day.padStart(2, '0')}.${finalValues.month.padStart(2, '0')}.${finalValues.year}`;
-        const isCorrect = isSpecialDate(dateStr);
+        const isCorrect = getCelebrationMessage(dateStr);
 
         if (isCorrect) {
             setShowFireworks(true);
             onDateCorrect?.(true);
         } else {
             setTimeout(() => {
-                alert(`Вы ввели: ${dateStr}. Это неправильно. Попробуйте снова.`);
+                alert(`КРИТИЧЕСКИЙ СБОЙ: ДАННЫЕ ${dateStr} ОТКЛОНЕНЫ`);
                 handleReset();
             }, 500);
         }
@@ -80,8 +87,7 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
         if (stage === 'year') isValid = currentSum >= 1900 && currentSum <= new Date().getFullYear();
 
         if (!isValid) {
-            setShake(true);
-            setTimeout(() => setShake(false), 500);
+            triggerAlarm();
             return;
         }
 
@@ -102,14 +108,18 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
             case 'day': return 'Наберите ДЕНЬ (1-31)';
             case 'month': return 'Наберите МЕСЯЦ (1-12)';
             case 'year': return 'Наберите ГОД (1900+)';
-            case 'done': return 'Готово!';
+            case 'done': return 'ОБРАБОТКА ПОТОКА...';
         }
     };
 
     return (
         <>
             {showFireworks && <Fireworks onComplete={() => setShowFireworks(false)} />}
-            <div className={`binary-input ${shake ? 'shake' : ''}`}>
+            <div className={`binary-input ${isAlarm ? 'shake' : ''}`}>
+                <div className="status-panel">
+                    <div className={`status-light ${isAlarm ? 'alarm' : ''}`}></div>
+                </div>
+
                 <div className="lcd-display">
                     <div className="stage-indicator">
                         <span className={stage === 'day' ? 'active' : values.day ? 'done' : ''}>ДЕНЬ</span>
@@ -149,8 +159,8 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
                     </button>
                 </div>
 
-                <div className="hint-text">
-                    Осторожно: пружины старые, контакты отходят!
+                <div className="alarm-text">
+                    ВНИМАНИЕ: КРИТИЧЕСКИЙ ИЗНОС МЕХАНИЗМОВ
                 </div>
             </div>
         </>
