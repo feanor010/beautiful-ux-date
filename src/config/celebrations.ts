@@ -1,6 +1,6 @@
 export interface CelebrationConfig {
-  date: string; // DD.MM.YYYY
-  message: string;
+    date: string; // DD.MM.YYYY
+    message: string;
 }
 
 export const celebrations: CelebrationConfig[] = [
@@ -30,7 +30,7 @@ export const celebrations: CelebrationConfig[] = [
   { date: '25.06.1992', message: 'Поздравляем, Илья!' },
   { date: '18.03.2004', message: 'Поздравляем, Кирилл!' },
   { date: '23.07.2002', message: 'Поздравляем, Машыч!' },
-  { date: '25.08.2003', message: 'Поздравляем, Жучок!' },
+  { date: '25.08.2003', message: 'Поздравляем, Никитосий!' },
   { date: '18.03.1976', message: 'Поздравляем, Пашаааа!' },
   { date: '01.12.2001', message: 'Поздравляем, Рома!' },
   { date: '23.01.2004', message: 'Поздравляем, Брэдгауэр!' },
