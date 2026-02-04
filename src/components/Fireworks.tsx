@@ -3,9 +3,10 @@ import './Fireworks.css';
 
 interface FireworksProps {
   onComplete?: () => void;
+  message?: string;
 }
 
-export const Fireworks = ({ onComplete }: FireworksProps) => {
+export const Fireworks = ({ onComplete, message = 'Ура!' }: FireworksProps) => {
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; color: string; delay: number }>>([]);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export const Fireworks = ({ onComplete }: FireworksProps) => {
 
   return (
     <div className="fireworks-overlay">
-      <div className="celebration-text">🎉 Ура, победа! 🎉</div>
+      <div className="celebration-text">🎉 {message} 🎉</div>
       {particles.map((particle) => (
         <div
           key={particle.id}

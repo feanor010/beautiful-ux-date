@@ -3,6 +3,7 @@ import {
   BinaryInput,
   ButtonGrid,
   ProgressiveSelects,
+  PacmanDigits,
 } from '../components/examples';
 
 export const examples: DateInputExample[] = [
@@ -23,5 +24,11 @@ export const examples: DateInputExample[] = [
     title: 'Бинарный Аккумулятор',
     description: 'Соберите дату из битов. Осторожно, контакты отходят!',
     component: BinaryInput,
+  },
+  {
+    id: 'pacman-digits',
+    title: 'Пакман с цифрами',
+    description: 'Соберите цифры, избегая врагов',
+    component: PacmanDigits,
   },
 ];
