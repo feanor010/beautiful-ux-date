@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import './DrunkInput.css';
 import { Fireworks } from '../Fireworks';
 import type { DateInputExampleProps } from '../../types';
-import {getCelebrationMessage} from "../../utils/celebrations.ts";
+import { getCelebrationMessage } from "../../utils/celebrations.ts";
 
 export const DrunkInput = ({ onDateCorrect }: DateInputExampleProps) => {
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -11,6 +11,7 @@ export const DrunkInput = ({ onDateCorrect }: DateInputExampleProps) => {
     const [values, setValues] = useState({ day: '', month: '', year: '' });
     const [offsets, setOffsets] = useState([{ x: 0, y: 0 }, { x: 0, y: 0 }, { x: 0, y: 0 }]);
     const [showFireworks, setShowFireworks] = useState(false);
+    const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -85,12 +86,15 @@ export const DrunkInput = ({ onDateCorrect }: DateInputExampleProps) => {
 
     const handleBrine = () => {
         setIsSober(true);
-        setTimeout(() => setIsSober(false), 3000);
+        setTimeout(() => setIsSober(false), 1000);
     };
 
     const handleSubmit = () => {
         const dateStr = `${values.day.padStart(2, '0')}.${values.month.padStart(2, '0')}.${values.year}`;
-        if (getCelebrationMessage(dateStr)) {
+        const message = getCelebrationMessage(dateStr);
+
+        if (message) {
+            setCelebrationMessage(message);
             setShowFireworks(true);
             onDateCorrect?.(true);
         } else {
@@ -100,7 +104,12 @@ export const DrunkInput = ({ onDateCorrect }: DateInputExampleProps) => {
 
     return (
         <>
-            {showFireworks && <Fireworks onComplete={() => setShowFireworks(false)} />}
+            {showFireworks && (
+                <Fireworks
+                    message={celebrationMessage ?? 'Ура!'}
+                    onComplete={() => setShowFireworks(false)}
+                />
+            )}
 
             <div
                 className="custom-cursor"

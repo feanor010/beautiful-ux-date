@@ -1,26 +1,26 @@
 import { useState } from 'react';
 import './ExistentialCaptcha.css';
 import { Fireworks } from '../Fireworks';
-import { isSpecialDate } from '../../utils/dateCheck';
 import type { DateInputExampleProps } from '../../types';
+import { getCelebrationMessage } from "../../utils/celebrations.ts";
 
 const CAPTCHA_IMAGES = [
-    { id: 1, url: 'https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=200', sad: true },
-    { id: 2, url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=200', sad: false },
-    { id: 3, url: 'https://images.unsplash.com/photo-1493839523149-2864fca44919?w=200', sad: true },
-    { id: 4, url: 'https://images.unsplash.com/photo-1518467166778-b88f373ffec7?w=200', sad: true },
-    { id: 5, url: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=200', sad: false },
-    { id: 6, url: 'https://images.unsplash.com/photo-1445262102387-5fbb30a5e59d?w=200', sad: true },
-    { id: 7, url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200', sad: false },
-    { id: 8, url: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?w=200', sad: false },
-    { id: 9, url: 'https://images.unsplash.com/photo-1504194104404-433180773017?w=200', sad: true },
+    { id: 1, url: 'https://avatars.mds.yandex.net/i?id=8cb0b8114d7e6aeff8359f79ca64ca65_l-5351088-images-thumbs&n=13', sad: true },
+    { id: 2, url: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300', sad: false },
+    { id: 3, url: 'https://avatars.mds.yandex.net/i?id=68dd57bf741b76b95e52b505c7dd28fe0916c042-5298414-images-thumbs&n=13', sad: true },
+    { id: 4, url: 'https://avatars.mds.yandex.net/i?id=ef808dd0a0c5ca1df96dd722590f0af8_l-4400724-images-thumbs&n=13', sad: true },
+    { id: 5, url: 'https://img.freepik.com/free-photo/group-fluffy-gray-kittens-looking-curious-ready-play_157027-4498.jpg?semt=ais_hybrid', sad: false },
+    { id: 6, url: 'https://avatars.mds.yandex.net/i?id=6bf9e18fbc39bdd7f28fb91f7564966e_l-17799811-images-thumbs&n=13', sad: true },
+    { id: 7, url: 'https://avatars.mds.yandex.net/i?id=2a0000019b70303a632ae2d97a5925e9539f-18249724-yarec&n=13', sad: false },
+    { id: 8, url: 'https://vkplay.ru/pre_0x736_resize/hotbox/content_files/gallery/31/19/c69aa4e5.jpeg?quality=85', sad: true },
+    { id: 9, url: 'https://avatars.mds.yandex.net/i?id=928b3740e21e18b8557e8c503ec085d6_l-9848534-images-thumbs&n=13', sad: false },
 ];
 
 const PROMPTS = [
-    "Выберите все изображения, на которых чувствуется тщетность бытия.",
-    "Отметьте квадраты, где одиночество достигло своего пика.",
-    "Где на этих фото скрыта меланхолия упущенных возможностей?",
-    "Выберите изображения, подтверждающие конечность всего сущего."
+    "Выберите все изображения, на которых время остановилось навсегда.",
+    "Отметьте квадраты, где тишина стала невыносимой.",
+    "Где на этих фото запечатлен распад надежды?",
+    "Выберите изображения, которые вызывают желание смотреть в стену часами."
 ];
 
 export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => {
@@ -30,10 +30,11 @@ export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => 
     const [promptIdx, setPromptIdx] = useState(0);
     const [error, setError] = useState('');
     const [showFireworks, setShowFireworks] = useState(false);
+    const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
 
     const handleConfirm = () => {
         if (date.length < 6) {
-            setError('Слишком короткая жизнь для такой даты...');
+            setError('Слишком мало цифр для такой долгой боли...');
             return;
         }
         setError('');
@@ -50,19 +51,21 @@ export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => 
 
     const verify = () => {
         const selectedData = CAPTCHA_IMAGES.filter(img => selected.includes(img.id));
-        const isSadEnough = selectedData.every(img => img.sad) && selectedData.length >= 3;
+        const isSadEnough = selectedData.length >= 3 && selectedData.every(img => img.sad);
 
         if (isSadEnough) {
             setShowCaptcha(false);
-            if (isSpecialDate(date)) {
+            const message = getCelebrationMessage(date);
+            if (message) {
+                setCelebrationMessage(message);
                 setShowFireworks(true);
                 onDateCorrect?.(true);
             } else {
-                setError('Дата верна, но ваше мироощущение всё еще слишком позитивно. Попробуйте снова.');
+                setError('Дата верна, но ваше существование всё еще под вопросом. Попробуйте снова.');
                 setDate('');
             }
         } else {
-            setError('Вы слишком счастливы для этой даты. Система не может вас идентифицировать.');
+            setError('Вы слишком счастливы для этой системы. Идентификация невозможна.');
             setShowCaptcha(false);
             setSelected([]);
         }
@@ -70,7 +73,13 @@ export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => 
 
     return (
         <>
-            {showFireworks && <Fireworks onComplete={() => setShowFireworks(false)} />}
+            <div className="noise-overlay"></div>
+            {showFireworks && (
+                <Fireworks
+                    message={celebrationMessage ?? 'Ура!'}
+                    onComplete={() => setShowFireworks(false)}
+                />
+            )}
 
             <div className="existential-container">
                 <div className="existential-header">
@@ -81,12 +90,12 @@ export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => 
                     <input
                         type="text"
                         className="existential-field"
-                        placeholder="ДД.ММ.ГГГГ"
+                        placeholder="00.00.0000"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                     />
                     <button className="confirm-btn" onClick={handleConfirm}>
-                        Подтвердить существование
+                        Подтвердить тщетность
                     </button>
                     <div className="snarky-message">{error}</div>
                 </div>
@@ -95,7 +104,7 @@ export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => 
                     <div className="captcha-modal">
                         <div className="captcha-box">
                             <div className="captcha-instruction">
-                                <p>Подтвердите, что вы не оптимист:</p>
+                                <p>Проверка на человечность:</p>
                                 <strong>{PROMPTS[promptIdx]}</strong>
                             </div>
 
@@ -106,13 +115,14 @@ export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => 
                                         className={`captcha-item ${selected.includes(img.id) ? 'selected' : ''}`}
                                         onClick={() => toggleImage(img.id)}
                                     >
-                                        <img src={img.url} alt="existential crisis" />
+                                        <img src={img.url} alt="void" />
                                     </div>
                                 ))}
                             </div>
 
                             <div className="captcha-footer">
-                                <button className="verify-btn" onClick={verify}>ПОДТВЕРДИТЬ</button>
+                                <span style={{ color: '#444', fontSize: '0.7rem' }}>Выбора нет</span>
+                                <button className="verify-btn" onClick={verify}>ПРИНЯТЬ</button>
                             </div>
                         </div>
                     </div>

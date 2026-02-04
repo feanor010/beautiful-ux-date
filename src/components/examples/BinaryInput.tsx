@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import './BinaryInput.css';
 import { Fireworks } from '../Fireworks';
 import type { DateInputExampleProps } from '../../types';
-import {getCelebrationMessage} from "../../utils/celebrations.ts";
+import { getCelebrationMessage } from "../../utils/celebrations.ts";
 
 const BITS = [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
 
@@ -12,6 +12,7 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
     const [values, setValues] = useState({ day: '', month: '', year: '' });
     const [showFireworks, setShowFireworks] = useState(false);
     const [isAlarm, setIsAlarm] = useState(false);
+    const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
 
     const currentSum = switches.reduce((acc, isOn, index) => {
         return acc + (isOn ? BITS[index] : 0);
@@ -30,7 +31,7 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
                 const activeIndices = prev.map((isOn, idx) => isOn ? idx : -1).filter(idx => idx !== -1);
 
                 if (activeIndices.length > 0) {
-                    const dropChance = 0.05 + (activeIndices.length * 0.02);
+                    const dropChance = 0.05 + (activeIndices.length * 0.03);
 
                     if (Math.random() < dropChance) {
                         const randomActiveIndex = activeIndices[Math.floor(Math.random() * activeIndices.length)];
@@ -60,14 +61,16 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
         setStage('day');
         setSwitches(new Array(12).fill(false));
         setIsAlarm(false);
+        setCelebrationMessage(null);
         onDateCorrect?.(false);
     }, [onDateCorrect]);
 
     const checkFinalDate = (finalValues: { day: string, month: string, year: string }) => {
         const dateStr = `${finalValues.day.padStart(2, '0')}.${finalValues.month.padStart(2, '0')}.${finalValues.year}`;
-        const isCorrect = getCelebrationMessage(dateStr);
+        const message = getCelebrationMessage(dateStr);
 
-        if (isCorrect) {
+        if (message) {
+            setCelebrationMessage(message);
             setShowFireworks(true);
             onDateCorrect?.(true);
         } else {
@@ -114,7 +117,12 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
 
     return (
         <>
-            {showFireworks && <Fireworks onComplete={() => setShowFireworks(false)} />}
+            {showFireworks && (
+                <Fireworks
+                    message={celebrationMessage ?? 'Ура!'}
+                    onComplete={() => setShowFireworks(false)}
+                />
+            )}
             <div className={`binary-input ${isAlarm ? 'shake' : ''}`}>
                 <div className="status-panel">
                     <div className={`status-light ${isAlarm ? 'alarm' : ''}`}></div>

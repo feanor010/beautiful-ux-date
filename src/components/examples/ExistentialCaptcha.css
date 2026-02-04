@@ -1,142 +1,161 @@
 .existential-container {
-    padding: 2rem;
-    background: #1a1a1a;
-    border-radius: 20px;
-    max-width: 600px;
+    padding: 4rem 2rem;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+    border-radius: 4px;
+    max-width: 700px;
     margin: 0 auto;
-    color: #dcdcdc;
-    font-family: 'Georgia', serif;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    border: 1px solid #333;
+    color: #555;
+    font-family: 'Courier New', Courier, monospace;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+    border: 1px solid #222;
+    position: relative;
+    overflow: hidden;
+}
+
+.existential-container::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+    opacity: 0.2;
+    pointer-events: none;
 }
 
 .existential-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 4rem;
 }
 
 .existential-header h3 {
-    font-style: italic;
-    color: #888;
-    font-size: 1.5rem;
+    font-weight: normal;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #444;
+    animation: flicker 4s infinite;
+}
+
+@keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+    20%, 22%, 24%, 55% { opacity: 0.4; }
 }
 
 .date-input-zone {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
+    gap: 3rem;
 }
 
 .existential-field {
     background: transparent;
     border: none;
-    border-bottom: 1px solid #444;
-    color: #fff;
-    font-size: 2rem;
+    border-bottom: 1px solid #333;
+    color: #dcdcdc;
+    font-size: 3.5rem;
     text-align: center;
-    padding: 0.5rem;
-    width: 250px;
+    padding: 1rem;
+    width: 100%;
+    max-width: 500px;
     outline: none;
-    transition: border-color 0.5s;
+    transition: all 0.5s;
+    letter-spacing: 8px;
+    font-weight: 100;
 }
 
 .existential-field:focus {
-    border-color: #888;
+    border-bottom-color: #555;
+    text-shadow: 0 0 10px rgba(255,255,255,0.2);
 }
 
 .confirm-btn {
-    padding: 0.8rem 2rem;
-    background: #333;
-    color: #aaa;
-    border: 1px solid #444;
+    padding: 1.2rem 3rem;
+    background: transparent;
+    color: #666;
+    border: 1px solid #333;
     cursor: pointer;
-    font-style: italic;
-    transition: all 0.3s;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: all 0.4s;
+    position: relative;
 }
 
 .confirm-btn:hover {
-    background: #444;
-    color: #fff;
+    background: #dcdcdc;
+    color: #000;
+    border-color: #dcdcdc;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
 }
 
 .captcha-modal {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.95);
+    background: rgba(0,0,0,0.98);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    padding: 20px;
+    backdrop-filter: blur(10px);
 }
 
 .captcha-box {
-    background: #f0f0f0;
-    color: #000;
-    padding: 1.5rem;
+    background: #111;
+    color: #fff;
+    padding: 2rem;
     width: 100%;
-    max-width: 400px;
-    border-radius: 2px;
-    box-shadow: 0 0 50px rgba(255,255,255,0.1);
+    max-width: 450px;
+    border: 1px solid #333;
+    position: relative;
 }
 
 .captcha-instruction {
-    background: #4a90e2;
-    color: #fff;
-    padding: 1rem;
-    margin: -1.5rem -1.5rem 1rem -1.5rem;
+    margin-bottom: 2rem;
+    border-left: 3px solid #444;
+    padding-left: 1rem;
 }
 
 .captcha-instruction p {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
 }
 
 .captcha-instruction strong {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     display: block;
-    margin-top: 0.3rem;
+    margin-top: 0.5rem;
+    color: #aaa;
+    line-height: 1.4;
 }
 
 .captcha-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-    margin-bottom: 1rem;
+    gap: 8px;
+    margin-bottom: 2rem;
 }
 
 .captcha-item {
     aspect-ratio: 1;
-    background: #ccc;
+    background: #000;
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    filter: grayscale(100%) contrast(120%);
-    transition: all 0.2s;
+    filter: grayscale(100%) brightness(0.6);
+    transition: all 0.3s;
+    border: 1px solid #222;
 }
 
 .captcha-item:hover {
-    filter: grayscale(0%) contrast(100%);
+    filter: grayscale(100%) brightness(1);
+    border-color: #444;
 }
 
 .captcha-item.selected {
-    transform: scale(0.9);
-    border: 4px solid #4a90e2;
-}
-
-.captcha-item.selected::after {
-    content: '✓';
-    position: absolute;
-    top: 5px; left: 5px;
-    background: #4a90e2;
-    color: #fff;
-    width: 20px; height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: 12px;
+    filter: grayscale(0%) brightness(0.8);
+    border: 2px solid #fff;
 }
 
 .captcha-item img {
@@ -147,29 +166,40 @@
 
 .captcha-footer {
     display: flex;
-    justify-content: flex-end;
-    padding-top: 1rem;
-    border-top: 1px solid #ddd;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .verify-btn {
-    background: #4a90e2;
-    color: #fff;
+    background: #fff;
+    color: #000;
     border: none;
-    padding: 0.6rem 1.5rem;
+    padding: 0.8rem 2rem;
     font-weight: bold;
     cursor: pointer;
-    border-radius: 2px;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
 }
 
 .verify-btn:hover {
-    background: #357abd;
+    background: #ccc;
 }
 
 .snarky-message {
-    color: #ff4d4d;
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
+    color: #600;
+    font-size: 1.5rem;
+    margin-top: 2rem;
     text-align: center;
-    min-height: 1rem;
+    min-height: 1.2rem;
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+.noise-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://media1.tenor.com/m/OroVCOXbuUUAAAAC/sadhamstergirl.gif');
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: initial;
 }
