@@ -1,0 +1,140 @@
+.date-breakout {
+  padding: 1rem;
+  background: #0f0f1a;
+  border-radius: 16px;
+  max-width: 940px;
+  margin: 0 auto;
+  color: #e2e8f0;
+}
+
+.date-breakout-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.date-breakout-desc {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  text-align: center;
+}
+
+.date-breakout-status {
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  color: #94a3b8;
+}
+
+
+.date-breakout-area {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a2e;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+}
+
+.date-breakout-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.date-breakout-start {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1rem 1.5rem;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  pointer-events: none;
+  animation: date-breakout-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes date-breakout-pulse {
+  0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.85; transform: translate(-50%, -50%) scale(1.02); }
+}
+
+.date-breakout-over {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(30, 30, 46, 0.95);
+  border-radius: 12px;
+  color: #f87171;
+  font-weight: 600;
+}
+
+.date-breakout-over button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.date-breakout-over button:hover {
+  background: #2563eb;
+}
+
+.date-breakout-leaderboard {
+  padding: 1.5rem;
+  background: rgba(30, 30, 46, 0.95);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.date-breakout-leaderboard h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+  color: #fbbf24;
+}
+
+.date-breakout-leaderboard ol {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-family: 'Courier New', monospace;
+}
+
+.date-breakout-leaderboard li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.date-breakout-again {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.date-breakout-again:hover {
+  filter: brightness(1.1);
+}

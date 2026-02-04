@@ -2,6 +2,7 @@ import type { DateInputExample } from '../types';
 import {
   BinaryInput,
   ButtonGrid,
+  DateBreakout,
   ProgressiveSelects,
   PacmanDigits, DrunkInput, ExistentialCaptcha,
 } from '../components/examples';
@@ -42,5 +43,11 @@ export const examples: DateInputExample[] = [
     title: 'Лотерея Судьбы',
     description: 'Выбей свой джекпот! Но берегись полиции и азарта.',
     component: ExistentialCaptcha,
+  },
+  {
+    id: 'date-breakout',
+    title: 'Дата через Breakout',
+    description: 'Разбейте блоки с цифрами, ловите падающие цифры паддлом и соберите дату',
+    component: DateBreakout,
   },
 ];
