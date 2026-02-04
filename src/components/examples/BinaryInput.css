@@ -1,0 +1,182 @@
+.binary-input {
+    padding: 2rem;
+    background: #2c3e50;
+    border-radius: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+    border: 4px solid #34495e;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    color: #ecf0f1;
+}
+
+.lcd-display {
+    background: #000;
+    border: 2px solid #7f8c8d;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    font-family: 'Courier New', monospace;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.2);
+}
+
+.stage-indicator {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.stage-indicator span.active {
+    color: #e74c3c;
+    font-weight: bold;
+    text-shadow: 0 0 5px #e74c3c;
+    animation: blink 1s infinite;
+}
+
+.stage-indicator span.done {
+    color: #2ecc71;
+}
+
+.current-value {
+    font-size: 2.5rem;
+    text-align: center;
+    color: #2ecc71;
+    text-shadow: 0 0 5px #2ecc71;
+    margin-bottom: 0.5rem;
+}
+
+.instruction {
+    text-align: center;
+    color: #f1c40f;
+    font-size: 1rem;
+}
+
+.switches-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.switch-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.bit-label {
+    font-size: 0.8rem;
+    color: #95a5a6;
+    font-weight: bold;
+}
+
+.toggle-switch {
+    width: 40px;
+    height: 80px;
+    background: #34495e;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+    transition: background 0.2s;
+}
+
+.toggle-switch.on {
+    background: #27ae60;
+}
+
+.toggle-switch.off {
+    background: #c0392b;
+}
+
+.switch-handle {
+    width: 36px;
+    height: 36px;
+    background: #ecf0f1;
+    border-radius: 2px;
+    position: absolute;
+    left: 2px;
+    transition: top 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.toggle-switch.off .switch-handle {
+    top: 42px; /* Внизу */
+}
+
+.toggle-switch.on .switch-handle {
+    top: 2px; /* Вверху */
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.commit-btn, .reset-btn {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: transform 0.1s;
+}
+
+.commit-btn {
+    background: #f39c12;
+    color: #2c3e50;
+    box-shadow: 0 4px 0 #d35400;
+}
+
+.commit-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #d35400;
+}
+
+.commit-btn:disabled {
+    background: #7f8c8d;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.reset-btn {
+    background: #95a5a6;
+    color: #2c3e50;
+    box-shadow: 0 4px 0 #7f8c8d;
+}
+
+.reset-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #7f8c8d;
+}
+
+.hint-text {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #7f8c8d;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.shake {
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}

@@ -4,3 +4,4 @@ export { ShiftingMask } from './ShiftingMask';
 export { RestrictedCalendar } from './RestrictedCalendar';
 export { RandomOrderSelects } from './RandomOrderSelects';
 export { ProgressiveSelects } from './ProgressiveSelects';
+export { BinaryInput } from './BinaryInput';
