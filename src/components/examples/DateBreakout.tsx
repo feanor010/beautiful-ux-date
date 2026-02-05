@@ -17,11 +17,23 @@ const BLOCK_HEIGHT = 28;
 // Blocks contain random digits from 0 to 9
 
 const getRandomDigits = (count: number): string[] => {
-  const digits: string[] = [];
-  for (let i = 0; i < count; i++) {
+  // Гарантируем наличие всех цифр от 0 до 9
+  const allDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  const digits: string[] = [...allDigits];
+  
+  // Если нужно больше цифр, добавляем случайные
+  while (digits.length < count) {
     digits.push(Math.floor(Math.random() * 10).toString());
   }
-  return digits;
+  
+  // Перемешиваем массив
+  for (let i = digits.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [digits[i], digits[j]] = [digits[j], digits[i]];
+  }
+  
+  // Возвращаем только нужное количество
+  return digits.slice(0, count);
 };
 
 const randomBallVelocity = (): { vx: number; vy: number } => {
@@ -39,6 +51,8 @@ interface Block {
   x: number;
   y: number;
   alive: boolean;
+  spawnTime: number;
+  targetY: number;
 }
 
 interface FallingDigit {
@@ -49,9 +63,9 @@ interface FallingDigit {
   vy: number;
 }
 
-const BALL_SPEED = 2.5;
+const BALL_SPEED = 5;
 const PADDLE_SPEED = 10;
-const FALL_SPEED = 1.5;
+const FALL_SPEED = 2.5;
 
 export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -62,6 +76,7 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [collectedDigits, setCollectedDigits] = useState<string[]>([]);
   const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
+  const [lives, setLives] = useState(9);
   const [leaderboard, setLeaderboard] = useState<number[]>(() => {
     try {
       const s = localStorage.getItem('dateBreakoutScores');
@@ -84,6 +99,7 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
     collected: [] as string[],
     score: 0,
     nextFallingId: 0,
+    lastBlockRespawn: Date.now(),
   });
 
   const keysRef = useRef({ left: false, right: false });
@@ -92,15 +108,19 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
   const initBlocks = useCallback((): Block[] => {
     const blocks: Block[] = [];
     let id = 0;
+    const now = Date.now();
     for (let row = 0; row < BLOCK_ROWS; row++) {
       const rowDigits = getRandomDigits(BLOCK_COLS);
       for (let col = 0; col < BLOCK_COLS; col++) {
+        const targetY = 24 + row * (BLOCK_HEIGHT + 4);
         blocks.push({
           id: id++,
           digit: rowDigits[col],
           x: col * (GAME_WIDTH / BLOCK_COLS) + 2,
-          y: 24 + row * (BLOCK_HEIGHT + 4),
+          y: targetY + 50, // Начинаем ниже для анимации
           alive: true,
+          spawnTime: now + (row * 50) + (col * 10), // Задержка для каскадного эффекта
+          targetY: targetY,
         });
       }
     }
@@ -114,13 +134,16 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       : -BLOCK_HEIGHT - 4;
     const newY = maxY + BLOCK_HEIGHT + 4;
     const rowDigits = getRandomDigits(BLOCK_COLS);
+    const now = Date.now();
     for (let col = 0; col < BLOCK_COLS; col++) {
       s.blocks.push({
         id: s.nextBlockId++,
         digit: rowDigits[col],
         x: col * (GAME_WIDTH / BLOCK_COLS) + 2,
-        y: newY,
+        y: newY + 50, // Начинаем ниже для анимации
         alive: true,
+        spawnTime: now + (col * 10), // Задержка для каскадного эффекта
+        targetY: newY,
       });
     }
   }, []);
@@ -141,9 +164,11 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       score: 0,
       nextFallingId: 0,
       nextBlockId: blocks.length,
+      lastBlockRespawn: Date.now(),
     };
     setCollectedDigits([]);
     setCelebrationMessage(null);
+    setLives(9);
     setGameStarted(true);
     setGameOver(false);
     setWon(false);
@@ -190,9 +215,25 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       if (s.ballX - BALL_RADIUS <= 0 || s.ballX + BALL_RADIUS >= GAME_WIDTH) s.ballVx *= -1;
       if (s.ballY - BALL_RADIUS <= 0) s.ballVy *= -1;
       if (s.ballY + BALL_RADIUS >= GAME_HEIGHT) {
-        document.exitPointerLock();
-        setGameOver(true);
-        setGameStarted(false);
+        // Потеря жизни
+        setLives((prevLives) => {
+          const newLives = prevLives - 1;
+          if (newLives <= 0) {
+            document.exitPointerLock();
+            setGameOver(true);
+            setGameStarted(false);
+            return 0;
+          } else {
+            // Перезапуск мяча
+            const { vx, vy } = randomBallVelocity();
+            s.ballX = GAME_WIDTH / 2;
+            s.ballY = GAME_HEIGHT - 80;
+            s.ballVx = vx;
+            s.ballVy = vy;
+            s.paddleX = (GAME_WIDTH - PADDLE_WIDTH) / 2;
+            return newLives;
+          }
+        });
         return;
       }
 
@@ -209,11 +250,12 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
         s.ballVx = (hitPos - 0.5) * 2 * BALL_SPEED;
       }
 
-      // Blocks
+      // Blocks - проверка коллизий (используем targetY для точности)
       s.blocks.forEach((b) => {
         if (!b.alive) return;
+        const blockY = b.y === b.targetY ? b.y : b.targetY; // Используем целевую позицию для коллизий
         const bx = b.x + BLOCK_WIDTH / 2;
-        const by = b.y + BLOCK_HEIGHT / 2;
+        const by = blockY + BLOCK_HEIGHT / 2;
         const dx = Math.abs(s.ballX - bx);
         const dy = Math.abs(s.ballY - by);
         if (dx <= BLOCK_WIDTH / 2 + BALL_RADIUS && dy <= BLOCK_HEIGHT / 2 + BALL_RADIUS) {
@@ -242,8 +284,9 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
             const newCollected = [...s.collected, fd.digit];
             s.collected = newCollected;
             setCollectedDigits(newCollected);
-            const dateStr = formatCollected(newCollected);
-            if (dateStr.length >= 10) {
+            // Проверяем дату только если собрано ровно 8 цифр (полная дата)
+            if (newCollected.length === 8) {
+              const dateStr = formatCollected(newCollected);
               const message = getCelebrationMessage(dateStr);
               if (message) {
                 document.exitPointerLock();
@@ -259,6 +302,13 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
                 setWon(true);
                 setShowFireworks(true);
                 onDateCorrect?.(true);
+              } else {
+                // Неправильная дата - проигрыш
+                document.exitPointerLock();
+                setGameOver(true);
+                setGameStarted(false);
+                onDateCorrect?.(false);
+                return;
               }
             }
             return false;
@@ -267,31 +317,136 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
         return fd.y < GAME_HEIGHT + 30;
       });
 
-      // Если все блоки разбиты — появляется новый ряд с цифрами 05.02.1976
+      // Если все блоки разбиты — появляется новый ряд
       if (s.blocks.every((b) => !b.alive)) {
         spawnNewRow(s);
+      }
+
+      // Пересоздание всех блоков каждые 15 секунд
+      const now = Date.now();
+      if (now - s.lastBlockRespawn >= 15000) {
+        // Проверяем, не находится ли мяч в области блоков перед пересозданием
+        const ballInBlockArea = s.ballY < 24 + BLOCK_ROWS * (BLOCK_HEIGHT + 4);
+        
+        // Если мяч в области блоков, не пересоздаем блоки, чтобы избежать коллизий
+        if (!ballInBlockArea) {
+          s.blocks = [];
+          const respawnNow = Date.now();
+          for (let row = 0; row < BLOCK_ROWS; row++) {
+            const rowDigits = getRandomDigits(BLOCK_COLS);
+            for (let col = 0; col < BLOCK_COLS; col++) {
+              const targetY = 24 + row * (BLOCK_HEIGHT + 4);
+              s.blocks.push({
+                id: s.nextBlockId++,
+                digit: rowDigits[col],
+                x: col * (GAME_WIDTH / BLOCK_COLS) + 2,
+                y: targetY + 50, // Начинаем ниже для анимации
+                alive: true,
+                spawnTime: respawnNow + (row * 50) + (col * 10), // Задержка для каскадного эффекта
+                targetY: targetY,
+              });
+            }
+          }
+          s.lastBlockRespawn = now;
+        } else {
+          // Если мяч в области блоков, откладываем пересоздание на следующий кадр
+          // Обновляем таймер только если прошло больше 16 секунд (даем запас)
+          if (now - s.lastBlockRespawn >= 16000) {
+            s.lastBlockRespawn = now - 1000; // Откладываем на 1 секунду
+          }
+        }
       }
 
       // Draw
       ctx.fillStyle = '#1a1a2e';
       ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
+      const currentTime = Date.now();
       s.blocks.forEach((b) => {
         if (!b.alive) return;
-        const gradient = ctx.createLinearGradient(b.x, b.y, b.x + BLOCK_WIDTH, b.y + BLOCK_HEIGHT);
-        gradient.addColorStop(0, '#4a69bd');
-        gradient.addColorStop(1, '#1e3a5f');
+        
+        // Анимация появления
+        const timeSinceSpawn = currentTime - b.spawnTime;
+        const animationDuration = 600; // 600ms для анимации
+        const progress = Math.min(1, Math.max(0, timeSinceSpawn / animationDuration));
+        
+        // Easing функция для плавной анимации
+        const easeOutBounce = (t: number): number => {
+          if (t < 1 / 2.75) {
+            return 7.5625 * t * t;
+          } else if (t < 2 / 2.75) {
+            return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+          } else if (t < 2.5 / 2.75) {
+            return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+          } else {
+            return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+          }
+        };
+        
+        const easedProgress = easeOutBounce(progress);
+        
+        // Позиция Y с анимацией
+        const currentY = b.targetY + (b.y - b.targetY) * (1 - easedProgress);
+        
+        // Масштаб с анимацией
+        const scale = 0.3 + easedProgress * 0.7;
+        const scaledWidth = BLOCK_WIDTH * scale;
+        const scaledHeight = BLOCK_HEIGHT * scale;
+        const offsetX = (BLOCK_WIDTH - scaledWidth) / 2;
+        const offsetY = (BLOCK_HEIGHT - scaledHeight) / 2;
+        
+        // Свечение при появлении
+        const glowIntensity = progress < 1 ? (1 - progress) * 0.8 : 0;
+        
+        // Сохраняем контекст
+        ctx.save();
+        
+        // Применяем свечение
+        if (glowIntensity > 0) {
+          ctx.shadowBlur = 20 * glowIntensity;
+          ctx.shadowColor = `rgba(74, 105, 189, ${glowIntensity})`;
+        }
+        
+        // Градиент с учетом анимации
+        const gradient = ctx.createLinearGradient(
+          b.x + offsetX, 
+          currentY + offsetY, 
+          b.x + offsetX + scaledWidth, 
+          currentY + offsetY + scaledHeight
+        );
+        const baseColor = progress < 1 ? '#6a8bd5' : '#4a69bd';
+        const darkColor = progress < 1 ? '#2e4a7f' : '#1e3a5f';
+        gradient.addColorStop(0, baseColor);
+        gradient.addColorStop(1, darkColor);
         ctx.fillStyle = gradient;
-        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.strokeStyle = progress < 1 
+          ? `rgba(255,255,255,${0.4 + progress * 0.6})` 
+          : 'rgba(255,255,255,0.4)';
         ctx.lineWidth = 2;
-        roundRect(ctx, b.x, b.y, BLOCK_WIDTH, BLOCK_HEIGHT, 6);
+        
+        roundRect(ctx, b.x + offsetX, currentY + offsetY, scaledWidth, scaledHeight, 6);
         ctx.fill();
         ctx.stroke();
+        
+        // Текст с учетом масштаба
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 20px sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(b.digit, b.x + BLOCK_WIDTH / 2, b.y + BLOCK_HEIGHT / 2);
+        ctx.fillText(
+          b.digit, 
+          b.x + BLOCK_WIDTH / 2, 
+          currentY + BLOCK_HEIGHT / 2
+        );
+        
+        // Обновляем позицию блока для коллизий
+        if (progress < 1) {
+          b.y = currentY;
+        } else {
+          b.y = b.targetY;
+        }
+        
+        ctx.restore();
       });
 
       s.fallingDigits.forEach((fd) => {
@@ -347,7 +502,7 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
 
     animationRef.current = requestAnimationFrame(gameLoop);
     return () => cancelAnimationFrame(animationRef.current);
-  }, [gameStarted, gameOver, won, onDateCorrect, spawnNewRow]);
+  }, [gameStarted, gameOver, won, onDateCorrect, spawnNewRow, lives]);
 
   const formatCollected = (arr: string[]) => {
     const pad = (s: string, len: number) => (s + '_'.repeat(len)).slice(0, len);
@@ -395,7 +550,10 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       </p>
 
       <div className="date-breakout-status">
-        Собрано: {displayDate}
+        <div className="status-row">
+          <span>Собрано: {displayDate}</span>
+          <span className="lives-display">Жизни: {lives}</span>
+        </div>
       </div>
 
       {showLeaderboard && won && (

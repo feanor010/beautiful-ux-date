@@ -138,7 +138,6 @@
 }
 
 .date-breakout-status {
-  text-align: center;
   font-family: 'Courier New', monospace;
   font-size: 1.4rem;
   margin-bottom: 1.5rem;
@@ -169,6 +168,34 @@
   position: relative;
   z-index: 1;
   animation: status-pulse 2s ease-in-out infinite;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.lives-display {
+  color: #f1c40f;
+  text-shadow:
+    0 0 15px rgba(241, 196, 15, 1),
+    0 0 30px rgba(241, 196, 15, 0.6),
+    0 0 45px rgba(241, 196, 15, 0.3),
+    2px 2px 0 #000;
+  animation: lives-pulse 1s ease-in-out infinite;
+}
+
+@keyframes lives-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
 }
 
 @keyframes status-pulse {
