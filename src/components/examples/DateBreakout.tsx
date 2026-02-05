@@ -100,6 +100,8 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
     score: 0,
     nextFallingId: 0,
     lastBlockRespawn: Date.now(),
+    gameWon: false,
+    gameLost: false,
   });
 
   const keysRef = useRef({ left: false, right: false });
@@ -165,6 +167,8 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       nextFallingId: 0,
       nextBlockId: blocks.length,
       lastBlockRespawn: Date.now(),
+      gameWon: false,
+      gameLost: false,
     };
     setCollectedDigits([]);
     setCelebrationMessage(null);
@@ -191,7 +195,8 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
   }, [gameStarted, gameOver, won]);
 
   useEffect(() => {
-    if (!gameStarted || gameOver || won) return;
+    // Проверяем только gameStarted и gameOver, won проверяем через s.gameWon в gameLoop
+    if (!gameStarted || gameOver) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -201,6 +206,15 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
 
     const gameLoop = () => {
       const s = stateRef.current;
+      
+      // Проверяем, не завершена ли игра победой или проигрышем
+      // Используем только флаги из ref, так как состояния React обновляются асинхронно
+      if (s.gameWon || s.gameLost) {
+        console.log('[DateBreakout] gameLoop: игра завершена, s.gameWon:', s.gameWon, 's.gameLost:', s.gameLost);
+        cancelAnimationFrame(animationRef.current);
+        return;
+      }
+      
       s.paddleWidth = PADDLE_WIDTH;
 
       // Paddle
@@ -219,9 +233,12 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
         setLives((prevLives) => {
           const newLives = prevLives - 1;
           if (newLives <= 0) {
+            // Поражение - жизни закончились
+            s.gameLost = true; // Устанавливаем синхронно в ref
             document.exitPointerLock();
             setGameOver(true);
             setGameStarted(false);
+            cancelAnimationFrame(animationRef.current);
             return 0;
           } else {
             // Перезапуск мяча
@@ -234,6 +251,11 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
             return newLives;
           }
         });
+        
+        // Если игра завершена, выходим из gameLoop немедленно
+        if (s.gameLost) {
+          return;
+        }
         return;
       }
 
@@ -287,29 +309,52 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
             // Проверяем дату только если собрано ровно 8 цифр (полная дата)
             if (newCollected.length === 8) {
               const dateStr = formatCollected(newCollected);
+              console.log('[DateBreakout] Проверка полной даты:', dateStr, 'Собрано цифр:', newCollected.length, 'Цифры:', newCollected);
               const message = getCelebrationMessage(dateStr);
+              console.log('[DateBreakout] Результат проверки:', message ? 'ПРАВИЛЬНАЯ ДАТА' : 'НЕПРАВИЛЬНАЯ ДАТА', 'message:', message);
+              
               if (message) {
+                // Правильная дата - победа!
+                console.log('[DateBreakout] ПОБЕДА! Устанавливаем s.gameWon = true');
+                s.gameWon = true; // Устанавливаем флаг в ref для немедленной остановки цикла
                 document.exitPointerLock();
-                const newScore = s.score + 500;
+                const finalScore = s.score + 500;
                 setLeaderboard((prev) => {
-                  const next = [...prev, newScore].sort((a, b) => b - a).slice(0, 5);
+                  const next = [...prev, finalScore].sort((a, b) => b - a).slice(0, 5);
                   try {
                     localStorage.setItem('dateBreakoutScores', JSON.stringify(next));
-                  } catch {}
+                  } catch {
+                    // Игнорируем ошибки localStorage
+                  }
                   return next;
                 });
                 setCelebrationMessage(message);
                 setWon(true);
+                setGameStarted(false);
                 setShowFireworks(true);
                 onDateCorrect?.(true);
+                // Отменяем анимацию немедленно
+                console.log('[DateBreakout] Отменяем анимацию, animationRef.current:', animationRef.current);
+                cancelAnimationFrame(animationRef.current);
+                // Прерываем выполнение gameLoop, устанавливая флаг и выходя из всех циклов
+                console.log('[DateBreakout] Возвращаем false из filter (победа)');
+                return false; // Удаляем цифру из fallingDigits
               } else {
-                // Неправильная дата - проигрыш
+                // Неправильная дата - поражение!
+                console.log('[DateBreakout] НЕПРАВИЛЬНАЯ ДАТА - ПОРАЖЕНИЕ! Устанавливаем s.gameLost = true');
+                s.gameLost = true; // Устанавливаем флаг в ref для немедленной остановки цикла
                 document.exitPointerLock();
                 setGameOver(true);
                 setGameStarted(false);
                 onDateCorrect?.(false);
-                return;
+                // Отменяем анимацию немедленно
+                console.log('[DateBreakout] Отменяем анимацию при поражении, animationRef.current:', animationRef.current);
+                cancelAnimationFrame(animationRef.current);
+                console.log('[DateBreakout] Возвращаем false из filter (поражение)');
+                return false; // Удаляем цифру из fallingDigits
               }
+            } else {
+              console.log('[DateBreakout] Собрано цифр:', newCollected.length, 'из 8, дата:', formatCollected(newCollected));
             }
             return false;
           }
@@ -317,9 +362,21 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
         return fd.y < GAME_HEIGHT + 30;
       });
 
+      // Проверяем, не завершена ли игра после обработки fallingDigits
+      if (s.gameWon || s.gameLost) {
+        cancelAnimationFrame(animationRef.current);
+        return;
+      }
+
       // Если все блоки разбиты — появляется новый ряд
       if (s.blocks.every((b) => !b.alive)) {
         spawnNewRow(s);
+      }
+
+      // Проверяем, не завершена ли игра перед пересозданием блоков
+      if (s.gameWon || s.gameLost) {
+        cancelAnimationFrame(animationRef.current);
+        return;
       }
 
       // Пересоздание всех блоков каждые 15 секунд
@@ -355,6 +412,12 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
             s.lastBlockRespawn = now - 1000; // Откладываем на 1 секунду
           }
         }
+      }
+
+      // Проверяем, не завершена ли игра перед отрисовкой
+      if (s.gameWon || s.gameLost) {
+        cancelAnimationFrame(animationRef.current);
+        return;
       }
 
       // Draw
@@ -480,7 +543,14 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       ctx.arc(s.ballX, s.ballY, BALL_RADIUS, 0, Math.PI * 2);
       ctx.fill();
 
-      animationRef.current = requestAnimationFrame(gameLoop);
+      // Продолжаем цикл только если игра не завершена
+      if (!s.gameWon && !s.gameLost) {
+        animationRef.current = requestAnimationFrame(gameLoop);
+      } else {
+        // Если игра завершена, отменяем анимацию
+        console.log('[DateBreakout] Перед requestAnimationFrame: игра завершена, s.gameWon:', s.gameWon, 's.gameLost:', s.gameLost);
+        cancelAnimationFrame(animationRef.current);
+      }
     };
 
     function roundRect(
@@ -502,7 +572,7 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
 
     animationRef.current = requestAnimationFrame(gameLoop);
     return () => cancelAnimationFrame(animationRef.current);
-  }, [gameStarted, gameOver, won, onDateCorrect, spawnNewRow, lives]);
+  }, [gameStarted, gameOver, onDateCorrect, spawnNewRow, lives]);
 
   const formatCollected = (arr: string[]) => {
     const pad = (s: string, len: number) => (s + '_'.repeat(len)).slice(0, len);
@@ -516,6 +586,12 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         document.exitPointerLock();
+        // Останавливаем игру при нажатии ESC
+        if (gameStarted && !gameOver && !won) {
+          setGameStarted(false);
+          stateRef.current.gameWon = false;
+          cancelAnimationFrame(animationRef.current);
+        }
         return;
       }
       if (e.key === 'ArrowLeft') keysRef.current.left = true;
@@ -531,7 +607,7 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, []);
+  }, [gameStarted, gameOver, won]);
 
   const displayDate = formatCollected(collectedDigits);
   const handleFireworksComplete = () => {
