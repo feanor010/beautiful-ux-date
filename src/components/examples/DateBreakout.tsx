@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import './DateBreakout.css';
 import { Fireworks } from '../Fireworks';
-import { isSpecialDate } from '../../utils/dateCheck';
 import { getCelebrationMessage } from '../../utils/celebrations';
 import type { DateInputExampleProps } from '../../types';
 
 const GAME_WIDTH = 900;
-const GAME_HEIGHT = 380;
+const GAME_HEIGHT = 500;
 const PADDLE_WIDTH = 120;
 const PADDLE_HEIGHT = 14;
 const BALL_RADIUS = 8;
@@ -15,16 +14,14 @@ const BLOCK_ROWS = 3;
 const BLOCK_WIDTH = GAME_WIDTH / BLOCK_COLS - 4;
 const BLOCK_HEIGHT = 28;
 
-// Target date 05.02.1976 → digits for blocks (shuffled per row)
-const TARGET_DIGITS = ['0', '5', '0', '2', '1', '9', '7', '6'];
+// Blocks contain random digits from 0 to 9
 
-const shuffleDigits = (): string[] => {
-  const arr = [...TARGET_DIGITS];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+const getRandomDigits = (count: number): string[] => {
+  const digits: string[] = [];
+  for (let i = 0; i < count; i++) {
+    digits.push(Math.floor(Math.random() * 10).toString());
   }
-  return arr;
+  return digits;
 };
 
 const randomBallVelocity = (): { vx: number; vy: number } => {
@@ -35,8 +32,6 @@ const randomBallVelocity = (): { vx: number; vy: number } => {
     vy: BALL_SPEED * Math.sin(angleRad),
   };
 };
-
-type PowerUpType = 'bigPaddle' | 'magnet' | 'slowBall';
 
 interface Block {
   id: number;
@@ -54,18 +49,9 @@ interface FallingDigit {
   vy: number;
 }
 
-interface PowerUp {
-  id: number;
-  type: PowerUpType;
-  x: number;
-  y: number;
-  vy: number;
-}
-
-const BALL_SPEED = 5;
+const BALL_SPEED = 2.5;
 const PADDLE_SPEED = 10;
-const FALL_SPEED = 3;
-const POWERUP_DURATION_MS = 8000;
+const FALL_SPEED = 1.5;
 
 export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -95,12 +81,9 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
     ballVy: 0,
     blocks: [] as Block[],
     fallingDigits: [] as FallingDigit[],
-    powerUps: [] as PowerUp[],
     collected: [] as string[],
-    powerUpActive: null as { type: PowerUpType; until: number } | null,
     score: 0,
     nextFallingId: 0,
-    nextPowerUpId: 0,
   });
 
   const keysRef = useRef({ left: false, right: false });
@@ -110,11 +93,11 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
     const blocks: Block[] = [];
     let id = 0;
     for (let row = 0; row < BLOCK_ROWS; row++) {
-      const rowDigits = shuffleDigits();
+      const rowDigits = getRandomDigits(BLOCK_COLS);
       for (let col = 0; col < BLOCK_COLS; col++) {
         blocks.push({
           id: id++,
-          digit: rowDigits[col % rowDigits.length],
+          digit: rowDigits[col],
           x: col * (GAME_WIDTH / BLOCK_COLS) + 2,
           y: 24 + row * (BLOCK_HEIGHT + 4),
           alive: true,
@@ -130,11 +113,11 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       ? Math.max(...s.blocks.map((b) => b.y))
       : -BLOCK_HEIGHT - 4;
     const newY = maxY + BLOCK_HEIGHT + 4;
-    const rowDigits = shuffleDigits();
+    const rowDigits = getRandomDigits(BLOCK_COLS);
     for (let col = 0; col < BLOCK_COLS; col++) {
       s.blocks.push({
         id: s.nextBlockId++,
-        digit: rowDigits[col % rowDigits.length],
+        digit: rowDigits[col],
         x: col * (GAME_WIDTH / BLOCK_COLS) + 2,
         y: newY,
         alive: true,
@@ -154,12 +137,9 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
       ballVy: vy,
       blocks,
       fallingDigits: [],
-      powerUps: [],
       collected: [],
-      powerUpActive: null,
       score: 0,
       nextFallingId: 0,
-      nextPowerUpId: 0,
       nextBlockId: blocks.length,
     };
     setCollectedDigits([]);
@@ -194,34 +174,17 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const getPaddleWidth = () => {
-      const { powerUpActive } = stateRef.current;
-      if (powerUpActive?.type === 'bigPaddle' && Date.now() < powerUpActive.until) {
-        return PADDLE_WIDTH * 1.6;
-      }
-      return PADDLE_WIDTH;
-    };
-
-    const getBallSpeed = () => {
-      const { powerUpActive } = stateRef.current;
-      if (powerUpActive?.type === 'slowBall' && Date.now() < powerUpActive.until) {
-        return 0.5;
-      }
-      return 1;
-    };
-
     const gameLoop = () => {
       const s = stateRef.current;
-      s.paddleWidth = getPaddleWidth();
-      const speedMult = getBallSpeed();
+      s.paddleWidth = PADDLE_WIDTH;
 
       // Paddle
       if (keysRef.current.left) s.paddleX = Math.max(0, s.paddleX - PADDLE_SPEED);
       if (keysRef.current.right) s.paddleX = Math.min(GAME_WIDTH - s.paddleWidth, s.paddleX + PADDLE_SPEED);
 
       // Ball
-      s.ballX += s.ballVx * speedMult;
-      s.ballY += s.ballVy * speedMult;
+      s.ballX += s.ballVx;
+      s.ballY += s.ballVy;
 
       // Walls
       if (s.ballX - BALL_RADIUS <= 0 || s.ballX + BALL_RADIUS >= GAME_WIDTH) s.ballVx *= -1;
@@ -264,37 +227,15 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
             y: b.y,
             vy: FALL_SPEED,
           });
-          if (Math.random() < 0.25) {
-            const types: PowerUpType[] = ['bigPaddle', 'magnet', 'slowBall'];
-            s.powerUps.push({
-              id: s.nextPowerUpId++,
-              type: types[Math.floor(Math.random() * 3)],
-              x: b.x + BLOCK_WIDTH / 2 - 12,
-              y: b.y,
-              vy: 2,
-            });
-          }
         }
       });
 
       // Falling digits
       const paddleLeft = s.paddleX;
       const paddleRight = s.paddleX + s.paddleWidth;
-      const magnet = s.powerUpActive?.type === 'magnet' && Date.now() < (s.powerUpActive?.until ?? 0);
-
-      const nextNeededDigit = s.collected.length < TARGET_DIGITS.length
-        ? TARGET_DIGITS[s.collected.length]
-        : null;
 
       s.fallingDigits = s.fallingDigits.filter((fd) => {
         fd.y += fd.vy;
-        const paddleCenterX = s.paddleX + s.paddleWidth / 2;
-        const digitCenterX = fd.x + 12;
-        if (magnet && fd.y > GAME_HEIGHT / 2) {
-          fd.x += (paddleCenterX - digitCenterX) * 0.03;
-        } else if (nextNeededDigit && fd.digit === nextNeededDigit && fd.y > GAME_HEIGHT / 3) {
-          fd.x += (paddleCenterX - digitCenterX) * 0.018;
-        }
         if (fd.y >= paddleY - 10 && fd.y <= paddleY + PADDLE_HEIGHT + 20) {
           const fdCenter = fd.x + 12;
           if (fdCenter >= paddleLeft && fdCenter <= paddleRight) {
@@ -302,45 +243,29 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
             s.collected = newCollected;
             setCollectedDigits(newCollected);
             const dateStr = formatCollected(newCollected);
-            if (dateStr.length >= 10 && isSpecialDate(dateStr)) {
-              document.exitPointerLock();
-              const newScore = s.score + 500;
-              setLeaderboard((prev) => {
-                const next = [...prev, newScore].sort((a, b) => b - a).slice(0, 5);
-                try {
-                  localStorage.setItem('dateBreakoutScores', JSON.stringify(next));
-                } catch {}
-                return next;
-              });
+            if (dateStr.length >= 10) {
               const message = getCelebrationMessage(dateStr);
-              setCelebrationMessage(message);
-              setWon(true);
-              setShowFireworks(true);
-              onDateCorrect?.(true);
+              if (message) {
+                document.exitPointerLock();
+                const newScore = s.score + 500;
+                setLeaderboard((prev) => {
+                  const next = [...prev, newScore].sort((a, b) => b - a).slice(0, 5);
+                  try {
+                    localStorage.setItem('dateBreakoutScores', JSON.stringify(next));
+                  } catch {}
+                  return next;
+                });
+                setCelebrationMessage(message);
+                setWon(true);
+                setShowFireworks(true);
+                onDateCorrect?.(true);
+              }
             }
             return false;
           }
         }
         return fd.y < GAME_HEIGHT + 30;
       });
-
-      // Power-ups
-      s.powerUps = s.powerUps.filter((pu) => {
-        pu.y += pu.vy;
-        if (pu.y >= paddleY - 10 && pu.y <= paddleY + PADDLE_HEIGHT + 20) {
-          const cx = pu.x + 12;
-          if (cx >= paddleLeft && cx <= paddleRight) {
-            s.powerUpActive = { type: pu.type, until: Date.now() + POWERUP_DURATION_MS };
-            return false;
-          }
-        }
-        return pu.y < GAME_HEIGHT + 30;
-      });
-
-      // Clear expired power-up
-      if (s.powerUpActive && Date.now() >= s.powerUpActive.until) {
-        s.powerUpActive = null;
-      }
 
       // Если все блоки разбиты — появляется новый ряд с цифрами 05.02.1976
       if (s.blocks.every((b) => !b.alive)) {
@@ -378,17 +303,6 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
         ctx.textBaseline = 'middle';
         ctx.fillText(fd.digit, fd.x, fd.y);
         ctx.shadowBlur = 0;
-      });
-
-      s.powerUps.forEach((pu) => {
-        const colors = { bigPaddle: '#4ade80', magnet: '#f59e0b', slowBall: '#60a5fa' };
-        ctx.fillStyle = colors[pu.type];
-        ctx.beginPath();
-        ctx.arc(pu.x + 12, pu.y, 10, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
       });
 
       // Paddle
@@ -476,9 +390,8 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
 
   return (
     <div className="date-breakout">
-      <h3 className="date-breakout-title">Введите дату рождения: разбейте блоки и ловите цифры</h3>
       <p className="date-breakout-desc">
-        Управление: ← → или мышь. Курсор заперт в области игры до проигрыша или Esc. Power-up&apos;ы: большой паддл, магнит, замедление мяча.
+        Управление: ← → или мышь. Курсор заперт в области игры до проигрыша или Esc.
       </p>
 
       <div className="date-breakout-status">
