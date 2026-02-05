@@ -1,5 +1,6 @@
 import type { DateInputExample } from '../types';
 import {
+  AstroDateInput,
   BinaryInput,
   ButtonGrid,
   LockedSlotsDateInput,
@@ -49,5 +50,11 @@ export const examples: DateInputExample[] = [
     title: 'Лотерея Судьбы',
     description: 'Выбей свой джекпот! Но берегись полиции и азарта.',
     component: ExistentialCaptcha,
+  },
+  {
+    id: 'astro-oracle',
+    title: 'Астрологический Оракул',
+    description: 'Найдите свою дату рождения по звездам, лунному циклу и восточному календарю.',
+    component: AstroDateInput,
   },
 ];
