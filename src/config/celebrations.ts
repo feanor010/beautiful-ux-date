@@ -4,7 +4,7 @@ export interface CelebrationConfig {
 }
 
 export const celebrations: CelebrationConfig[] = [
-  { date: '05.02.1976', message: 'Поздравляем, Аня!' },
+  { date: '05.02.1976', message: 'С Днём Рождения, Аня!' },
   { date: '08.06.1977', message: 'Поздравляем, Женя!' },
   { date: '07.10.1999', message: 'Поздравляем, Крейзи Даниила!' },
   { date: '30.04.1997', message: 'Поздравляем, Дима!' },
