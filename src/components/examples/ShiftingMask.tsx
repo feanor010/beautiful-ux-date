@@ -7,7 +7,6 @@ import type { DateInputExampleProps } from '../../types';
 // Example 4: Input with constantly changing mask
 export const ShiftingMask = ({ onDateCorrect }: DateInputExampleProps) => {
   const [value, setValue] = useState('');
-  const [mask, setMask] = useState('DD.MM.YYYY');
   const [placeholder, setPlaceholder] = useState('DD.MM.YYYY');
   const [showFireworks, setShowFireworks] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -23,7 +22,6 @@ export const ShiftingMask = ({ onDateCorrect }: DateInputExampleProps) => {
   useEffect(() => {
     const interval = setInterval(() => {
       const randomMask = masks[Math.floor(Math.random() * masks.length)];
-      setMask(randomMask);
       setPlaceholder(randomMask);
     }, 3000);
 
@@ -34,7 +32,7 @@ export const ShiftingMask = ({ onDateCorrect }: DateInputExampleProps) => {
     const newValue = e.target.value;
     setValue(newValue);
     
-    // Check if date matches 05.02.1976
+    // Check if date matches the configured target date
     const isDateCorrect = isSpecialDate(newValue);
     if (isDateCorrect && !isCorrect) {
       setShowFireworks(true);

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { examples } from './data/examples';
 import './App.css';
+import logo from './assets/logo.svg';
 
 function App() {
   const [selectedExampleId, setSelectedExampleId] = useState<string>(examples[0].id);
@@ -24,6 +25,7 @@ function App() {
 
   return (
     <div className="app">
+      <img src={logo} className="app-logo" alt="Logo" />
       <header className="app-header">
         <h1>Пожалуйста, введите вашу дату рождения</h1>
       </header>

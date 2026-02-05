@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import './RestrictedCalendar.css';
 import { Fireworks } from '../Fireworks';
 import type { DateInputExampleProps } from '../../types';
+import { getTargetDigitSlots } from '../../config/targetDate';
 
 // Example 5: Calendar with only specific days available
 export const RestrictedCalendar = ({ onDateCorrect }: DateInputExampleProps) => {
@@ -9,10 +10,14 @@ export const RestrictedCalendar = ({ onDateCorrect }: DateInputExampleProps) => 
   const [showFireworks, setShowFireworks] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   
-  // For this component, we only select day
-  // Check if day is 5 (which is part of 05.02.1976)
+  // For this component, we only select day.
+  // Mark correct if chosen day matches the target day.
   useEffect(() => {
-    const isDateCorrect = selectedDate === '5' || selectedDate === '05';
+    const digits = getTargetDigitSlots();
+    const targetDay = digits.length >= 2 ? `${digits[0]}${digits[1]}` : null;
+    const isDateCorrect =
+      !!targetDay &&
+      (selectedDate === targetDay || selectedDate === String(Number(targetDay)));
     if (isDateCorrect && !isCorrect) {
       setShowFireworks(true);
       setIsCorrect(true);

@@ -1,4 +1,4 @@
-import { useState, useRef, KeyboardEvent } from 'react';
+import { useState, useRef, type KeyboardEvent } from 'react';
 import './CharByCharInput.css';
 
 // Example 1: Each character in separate input field
@@ -41,7 +41,9 @@ export const CharByCharInput = () => {
           return (
             <input
               key={index}
-              ref={(el) => (inputsRef.current[index] = el)}
+              ref={(el) => {
+                inputsRef.current[index] = el;
+              }}
               type="text"
               maxLength={1}
               value={date[index]}
