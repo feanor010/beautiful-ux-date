@@ -36,4 +36,5 @@ export const celebrations: CelebrationConfig[] = [
   { date: '23.01.2004', message: 'Поздравляем, Брэдгауэр!' },
   { date: '03.03.2005', message: 'Поздравляем, Алан!' },
   { date: '17.06.2001', message: 'Поздравляем, Лиза!' },
+  { date: '20.05.2004', message: 'Поздравляем, Тёма!' },
 ];

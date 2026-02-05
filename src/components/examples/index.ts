@@ -8,4 +8,5 @@ export { BinaryInput } from './BinaryInput';
 export { PacmanDigits } from './PacmanDigits';
 export { DrunkInput } from './DrunkInput';
 export { ExistentialCaptcha } from './ExistentialCaptcha';
+export { AstroDateInput } from '../AstroDateInput';
 export { DateBreakout } from './DateBreakout';
