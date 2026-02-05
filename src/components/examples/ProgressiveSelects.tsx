@@ -35,8 +35,8 @@ export const ProgressiveSelects = ({ onDateCorrect }: DateInputExampleProps) => 
   }, []);
 
   const randomYears = useMemo(() => {
-    // Years from 60 to 2005
-    return shuffleArray(Array.from({ length: 1946 }, (_, i) => 2005 - i));
+    // Years from 1970 to 2005
+    return shuffleArray(Array.from({ length: 36 }, (_, i) => 2005 - i));
   }, []);
 
   // Generate button positions (one green, rest red)
