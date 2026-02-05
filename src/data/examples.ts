@@ -1,8 +1,10 @@
 import type { DateInputExample } from '../types';
 import {
+  BinaryInput,
   ButtonGrid,
   LockedSlotsDateInput,
   ProgressiveSelects,
+  PacmanDigits, DrunkInput, ExistentialCaptcha,
 } from '../components/examples';
 
 export const examples: DateInputExample[] = [
@@ -23,5 +25,29 @@ export const examples: DateInputExample[] = [
     title: 'Слоты с блокировкой',
     description: 'Слоты как в коде из SMS: случайные цифры + замок на каждый слот',
     component: LockedSlotsDateInput,
+  },
+  {
+    id: 'pacman-digits',
+    title: 'Пакман с цифрами',
+    description: 'Соберите цифры, избегая врагов',
+    component: PacmanDigits,
+  },
+  {
+    id: 'drunk-input',
+    title: 'Пьяный курсор',
+    description: 'Попробуйте попасть по кнопкам, когда всё плывет и двоится.',
+    component: DrunkInput,
+  },
+  {
+    id: 'binary-input',
+    title: 'Бинарный Аккумулятор',
+    description: 'Соберите дату из битов. Осторожно, контакты отходят!',
+    component: BinaryInput,
+  },
+  {
+    id: 'date-lottery',
+    title: 'Лотерея Судьбы',
+    description: 'Выбей свой джекпот! Но берегись полиции и азарта.',
+    component: ExistentialCaptcha,
   },
 ];

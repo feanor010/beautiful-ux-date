@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import './LockedSlotsDateInput.css';
 import { Fireworks } from '../Fireworks';
-import { isSpecialDate } from '../../utils/dateCheck';
+import { getCelebrationMessage } from '../../utils/celebrations';
 import { getTargetDigitSlots } from '../../config/targetDate';
 import type { DateInputExampleProps } from '../../types';
 
@@ -22,28 +22,51 @@ export const LockedSlotsDateInput = ({ onDateCorrect }: DateInputExampleProps) =
   const [digits, setDigits] = useState<string[]>(() => Array(DIGIT_COUNT).fill(''));
   const [locked, setLocked] = useState<boolean[]>(() => Array(DIGIT_COUNT).fill(false));
   const [showFireworks, setShowFireworks] = useState(false);
+  const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
 
   const lastMatchRef = useRef(false);
+  const lastMessageRef = useRef<string | null>(null);
 
   const evaluateAndNotify = useCallback(
-    (nextDigits: string[]) => {
+    (nextDigits: string[], nextLocked: boolean[]) => {
+      const allLocked = nextLocked.every(Boolean);
       const filled = nextDigits.every((d) => d.length === 1);
-      const match = filled && isSpecialDate(buildDateString(nextDigits));
-      if (lastMatchRef.current === match) return;
+      if (!filled || !allLocked) {
+        if (lastMatchRef.current) {
+          lastMatchRef.current = false;
+          lastMessageRef.current = null;
+          setCelebrationMessage(null);
+          onDateCorrect?.(false);
+        }
+        return;
+      }
+      const dateStr = buildDateString(nextDigits);
+      const message = getCelebrationMessage(dateStr);
+      const match = !!message;
+      if (lastMatchRef.current === match && (match ? lastMessageRef.current === message : true)) return;
       lastMatchRef.current = match;
-      onDateCorrect?.(match);
-      if (match) setShowFireworks(true);
+      lastMessageRef.current = message;
+      if (match) {
+        setCelebrationMessage(message);
+        setShowFireworks(true);
+        onDateCorrect?.(true);
+      } else {
+        setCelebrationMessage(null);
+        onDateCorrect?.(false);
+      }
     },
     [onDateCorrect],
   );
 
-  const toggleLock = useCallback((index: number) => {
-    setLocked((prev) => {
-      const next = [...prev];
-      next[index] = !next[index];
-      return next;
-    });
-  }, []);
+  const toggleLock = useCallback(
+    (index: number) => {
+      const nextLocked = [...locked];
+      nextLocked[index] = !nextLocked[index];
+      setLocked(nextLocked);
+      evaluateAndNotify(digits, nextLocked);
+    },
+    [digits, evaluateAndNotify, locked],
+  );
 
   const handleRandomize = useCallback(() => {
     const unlockedIndices: number[] = [];
@@ -74,13 +97,15 @@ export const LockedSlotsDateInput = ({ onDateCorrect }: DateInputExampleProps) =
     }
 
     setDigits(nextDigits);
-    evaluateAndNotify(nextDigits);
+    evaluateAndNotify(nextDigits, locked);
   }, [digits, evaluateAndNotify, locked]);
 
   const handleReset = useCallback(() => {
     setDigits(Array(DIGIT_COUNT).fill(''));
     setLocked(Array(DIGIT_COUNT).fill(false));
     lastMatchRef.current = false;
+    lastMessageRef.current = null;
+    setCelebrationMessage(null);
     onDateCorrect?.(false);
   }, [onDateCorrect]);
 
@@ -116,7 +141,12 @@ export const LockedSlotsDateInput = ({ onDateCorrect }: DateInputExampleProps) =
 
   return (
     <>
-      {showFireworks && <Fireworks onComplete={() => setShowFireworks(false)} />}
+      {showFireworks && (
+        <Fireworks
+          message={celebrationMessage ?? 'Ура!'}
+          onComplete={() => setShowFireworks(false)}
+        />
+      )}
       <div className="locked-slots-date-input">
         <div className="lsdi-top">
           <div className="lsdi-actions">

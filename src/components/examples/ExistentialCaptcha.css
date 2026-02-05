@@ -1,0 +1,205 @@
+.existential-container {
+    padding: 4rem 2rem;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+    border-radius: 4px;
+    max-width: 700px;
+    margin: 0 auto;
+    color: #555;
+    font-family: 'Courier New', Courier, monospace;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+    border: 1px solid #222;
+    position: relative;
+    overflow: hidden;
+}
+
+.existential-container::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+    opacity: 0.2;
+    pointer-events: none;
+}
+
+.existential-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.existential-header h3 {
+    font-weight: normal;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #444;
+    animation: flicker 4s infinite;
+}
+
+@keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+    20%, 22%, 24%, 55% { opacity: 0.4; }
+}
+
+.date-input-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
+
+.existential-field {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #333;
+    color: #dcdcdc;
+    font-size: 3.5rem;
+    text-align: center;
+    padding: 1rem;
+    width: 100%;
+    max-width: 500px;
+    outline: none;
+    transition: all 0.5s;
+    letter-spacing: 8px;
+    font-weight: 100;
+}
+
+.existential-field:focus {
+    border-bottom-color: #555;
+    text-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
+.confirm-btn {
+    padding: 1.2rem 3rem;
+    background: transparent;
+    color: #666;
+    border: 1px solid #333;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    transition: all 0.4s;
+    position: relative;
+}
+
+.confirm-btn:hover {
+    background: #dcdcdc;
+    color: #000;
+    border-color: #dcdcdc;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+}
+
+.captcha-modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.98);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.captcha-box {
+    background: #111;
+    color: #fff;
+    padding: 2rem;
+    width: 100%;
+    max-width: 450px;
+    border: 1px solid #333;
+    position: relative;
+}
+
+.captcha-instruction {
+    margin-bottom: 2rem;
+    border-left: 3px solid #444;
+    padding-left: 1rem;
+}
+
+.captcha-instruction p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.captcha-instruction strong {
+    font-size: 1.1rem;
+    display: block;
+    margin-top: 0.5rem;
+    color: #aaa;
+    line-height: 1.4;
+}
+
+.captcha-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 2rem;
+}
+
+.captcha-item {
+    aspect-ratio: 1;
+    background: #000;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    filter: grayscale(100%) brightness(0.6);
+    transition: all 0.3s;
+    border: 1px solid #222;
+}
+
+.captcha-item:hover {
+    filter: grayscale(100%) brightness(1);
+    border-color: #444;
+}
+
+.captcha-item.selected {
+    filter: grayscale(0%) brightness(0.8);
+    border: 2px solid #fff;
+}
+
+.captcha-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.captcha-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.verify-btn {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+.verify-btn:hover {
+    background: #ccc;
+}
+
+.snarky-message {
+    color: #600;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    text-align: center;
+    min-height: 1.2rem;
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+.noise-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://media1.tenor.com/m/OroVCOXbuUUAAAAC/sadhamstergirl.gif');
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: initial;
+}

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import './ProgressiveSelects.css';
 import { Fireworks } from '../Fireworks';
-import { isSpecialDate } from '../../utils/dateCheck';
+import { getCelebrationMessage } from '../../utils/celebrations';
 import type { DateInputExampleProps } from '../../types';
 
 // Shuffle function using Fisher-Yates algorithm
@@ -21,6 +21,7 @@ export const ProgressiveSelects = ({ onDateCorrect }: DateInputExampleProps) => 
   const [stage, setStage] = useState<'day' | 'button' | 'month' | 'year'>('day');
   const [showFireworks, setShowFireworks] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
   const [timer, setTimer] = useState(5);
   const [isCharging, setIsCharging] = useState(false);
 
@@ -131,24 +132,34 @@ export const ProgressiveSelects = ({ onDateCorrect }: DateInputExampleProps) => 
   useEffect(() => {
     if (day && month && year) {
       const dateStr = `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
-      const isDateCorrect = isSpecialDate(dateStr);
-      if (isDateCorrect && !isCorrect) {
-        setShowFireworks(true);
-        setIsCorrect(true);
-        onDateCorrect?.(true);
-      } else if (!isDateCorrect && isCorrect) {
+      const message = getCelebrationMessage(dateStr);
+      if (message) {
+        if (!isCorrect || celebrationMessage !== message) {
+          setCelebrationMessage(message);
+          setShowFireworks(true);
+          setIsCorrect(true);
+          onDateCorrect?.(true);
+        }
+      } else if (isCorrect) {
         setIsCorrect(false);
+        setCelebrationMessage(null);
         onDateCorrect?.(false);
       }
     } else if (isCorrect) {
       setIsCorrect(false);
+      setCelebrationMessage(null);
       onDateCorrect?.(false);
     }
-  }, [day, month, year, isCorrect, onDateCorrect]);
+  }, [day, month, year, isCorrect, onDateCorrect, celebrationMessage]);
 
   return (
     <>
-      {showFireworks && <Fireworks onComplete={() => setShowFireworks(false)} />}
+      {showFireworks && (
+        <Fireworks
+          message={celebrationMessage ?? 'Ура!'}
+          onComplete={() => setShowFireworks(false)}
+        />
+      )}
       <div className="progressive-selects">
         {/* Timer bar - always visible */}
         <div className="timer-container">

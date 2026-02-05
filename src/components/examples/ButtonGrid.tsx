@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import './ButtonGrid.css';
 import { Fireworks } from '../Fireworks';
-import { isSpecialDate } from '../../utils/dateCheck';
+import { getCelebrationMessage } from '../../utils/celebrations';
 import { getTargetDigitSlots } from '../../config/targetDate';
 import type { DateInputExampleProps } from '../../types';
 
@@ -47,6 +47,7 @@ export const ButtonGrid = ({ onDateCorrect }: DateInputExampleProps) => {
   const [numbers, setNumbers] = useState<string[]>(() => generateNumbers());
   const [showFireworks, setShowFireworks] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
+  const [celebrationMessage, setCelebrationMessage] = useState<string | null>(null);
 
   const handleClick = (num: string) => {
     const newDate = date.split('');
@@ -75,13 +76,21 @@ export const ButtonGrid = ({ onDateCorrect }: DateInputExampleProps) => {
 
     const finalDate = newDate.join('');
     setDate(finalDate);
-    
-    // Check if date matches target date
-    const isDateCorrect = isSpecialDate(finalDate);
-    if (isDateCorrect && !isCorrect) {
-      setShowFireworks(true);
-      setIsCorrect(true);
-      onDateCorrect?.(true);
+
+    if (!finalDate.includes('_')) {
+      const message = getCelebrationMessage(finalDate);
+      if (message) {
+        if (!isCorrect || celebrationMessage !== message) {
+          setCelebrationMessage(message);
+          setShowFireworks(true);
+          setIsCorrect(true);
+          onDateCorrect?.(true);
+        }
+      } else if (isCorrect) {
+        setIsCorrect(false);
+        setCelebrationMessage(null);
+        onDateCorrect?.(false);
+      }
     }
   };
 
@@ -93,12 +102,18 @@ export const ButtonGrid = ({ onDateCorrect }: DateInputExampleProps) => {
   const handleReset = useCallback(() => {
     setDate('__.__.____');
     setIsCorrect(false);
+    setCelebrationMessage(null);
     onDateCorrect?.(false);
   }, [onDateCorrect]);
 
   return (
     <>
-      {showFireworks && <Fireworks onComplete={() => setShowFireworks(false)} />}
+      {showFireworks && (
+        <Fireworks
+          message={celebrationMessage ?? 'Ура!'}
+          onComplete={() => setShowFireworks(false)}
+        />
+      )}
       <div className="button-grid">
         <div className="date-display">
         {date.split('').map((char, index) => (
