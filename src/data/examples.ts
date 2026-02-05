@@ -6,7 +6,7 @@ import {
   LockedSlotsDateInput,
   DateBreakout,
   ProgressiveSelects,
-  PacmanDigits, DrunkInput, ExistentialCaptcha,
+  PacmanDigits, DrunkInput, ExistentialCaptcha, PhilosophicalQuiz,
 } from '../components/examples';
 
 export const examples: DateInputExample[] = [
@@ -63,5 +63,11 @@ export const examples: DateInputExample[] = [
     title: 'Дата через Breakout',
     description: 'Разбейте блоки с цифрами, ловите падающие цифры паддлом и соберите дату',
     component: DateBreakout,
+  },
+  {
+    id: 'philosophical-quiz',
+    title: 'Философский опросник',
+    description: 'Ответьте на вечные вопросы, а в конце введите дату рождения.',
+    component: PhilosophicalQuiz,
   },
 ];

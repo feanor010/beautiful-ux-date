@@ -1,0 +1,143 @@
+.philosophical-quiz {
+  padding: 4rem 2rem;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+  border-radius: 4px;
+  max-width: 700px;
+  margin: 0 auto;
+  color: #555;
+  font-family: 'Courier New', Courier, monospace;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+  border: 1px solid #222;
+  position: relative;
+  overflow: hidden;
+}
+
+.philosophical-question {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.philosophical-question h2 {
+  font-weight: normal;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: #888;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.philosophical-answer-input {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #333;
+  color: #dcdcdc;
+  font-size: 1.1rem;
+  padding: 0.8rem;
+  outline: none;
+  font-family: inherit;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.philosophical-answer-input:focus {
+  border-bottom-color: #555;
+}
+
+.philosophical-answer-input::placeholder {
+  color: #444;
+}
+
+.philosophical-next {
+  display: block;
+  margin: 0 auto;
+  padding: 1rem 2.5rem;
+  background: transparent;
+  color: #666;
+  border: 1px solid #333;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  transition: all 0.4s;
+}
+
+.philosophical-next:hover {
+  background: #dcdcdc;
+  color: #000;
+  border-color: #dcdcdc;
+}
+
+.philosophical-date-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.philosophical-date-step h2 {
+  font-weight: normal;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: #666;
+  text-align: center;
+}
+
+.philosophical-date-input-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.philosophical-field {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #333;
+  color: #dcdcdc;
+  font-size: 2rem;
+  text-align: center;
+  padding: 1rem;
+  width: 100%;
+  max-width: 300px;
+  outline: none;
+  transition: all 0.5s;
+  letter-spacing: 6px;
+  font-family: inherit;
+}
+
+.philosophical-field:focus {
+  border-bottom-color: #555;
+}
+
+.philosophical-field::placeholder {
+  color: #444;
+}
+
+.philosophical-submit {
+  padding: 1rem 2rem;
+  background: transparent;
+  color: #666;
+  border: 1px solid #333;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  transition: all 0.4s;
+}
+
+.philosophical-submit:hover:not(:disabled) {
+  background: #dcdcdc;
+  color: #000;
+  border-color: #dcdcdc;
+}
+
+.philosophical-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
