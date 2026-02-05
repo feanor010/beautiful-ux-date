@@ -4,6 +4,7 @@ import {
   BinaryInput,
   ButtonGrid,
   LockedSlotsDateInput,
+  DateBreakout,
   ProgressiveSelects,
   PacmanDigits, DrunkInput, ExistentialCaptcha,
 } from '../components/examples';
@@ -56,5 +57,11 @@ export const examples: DateInputExample[] = [
     title: 'Астрологический Оракул',
     description: 'Найдите свою дату рождения по звездам, лунному циклу и восточному календарю.',
     component: AstroDateInput,
+  },
+  {
+    id: 'date-breakout',
+    title: 'Дата через Breakout',
+    description: 'Разбейте блоки с цифрами, ловите падающие цифры паддлом и соберите дату',
+    component: DateBreakout,
   },
 ];
