@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import './ButtonGrid.css';
 import { Fireworks } from '../Fireworks';
 import { getCelebrationMessage } from '../../utils/celebrations';
+import { getTargetDigitSlots } from '../../config/targetDate';
 import type { DateInputExampleProps } from '../../types';
 
 // Shuffle function using Fisher-Yates algorithm
@@ -14,13 +15,23 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return shuffled;
 };
 
-// Generate two-digit numbers with 33% chance to include 05, 02, 19, 76
+const getTargetPairs = (): string[] => {
+  const digits = getTargetDigitSlots();
+  if (digits.length < 8) return [];
+  return [
+    `${digits[0]}${digits[1]}`,
+    `${digits[2]}${digits[3]}`,
+    `${digits[4]}${digits[5]}`,
+    `${digits[6]}${digits[7]}`,
+  ];
+};
+
+// Generate two-digit numbers with 33% chance to include target pairs
 const generateNumbers = (): string[] => {
   const shouldUseSpecial = Math.random() < 0.33;
   
   if (shouldUseSpecial) {
-    // Use special numbers: 05, 02, 19, 76
-    const specialNumbers = ['05', '02', '19', '76'];
+    const specialNumbers = getTargetPairs();
     const otherNumbers = Array.from({ length: 31 }, (_, i) => (i + 1).toString().padStart(2, '0'))
       .filter(n => !specialNumbers.includes(n));
     const allNumbers = [...specialNumbers, ...otherNumbers];
@@ -65,7 +76,7 @@ export const ButtonGrid = ({ onDateCorrect }: DateInputExampleProps) => {
 
     const finalDate = newDate.join('');
     setDate(finalDate);
-    
+
     if (!finalDate.includes('_')) {
       const message = getCelebrationMessage(finalDate);
       if (message) {

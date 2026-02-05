@@ -1,5 +1,5 @@
 // Types for date input examples
-import { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 
 export interface DateInputExampleProps {
   onDateCorrect?: (isCorrect: boolean) => void;

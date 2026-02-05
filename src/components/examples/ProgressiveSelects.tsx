@@ -78,7 +78,7 @@ export const ProgressiveSelects = ({ onDateCorrect }: DateInputExampleProps) => 
   }, [stage, onDateCorrect]);
 
   // Charging logic - only on hold
-  const chargeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const chargeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleChargeStart = useCallback(() => {
     setIsCharging(true);

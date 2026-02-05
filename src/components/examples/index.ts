@@ -1,7 +1,10 @@
 // Export all date input examples
 export { ButtonGrid } from './ButtonGrid';
+export { ShiftingMask } from './ShiftingMask';
+export { RestrictedCalendar } from './RestrictedCalendar';
 export { ProgressiveSelects } from './ProgressiveSelects';
+export { LockedSlotsDateInput } from './LockedSlotsDateInput';
 export { BinaryInput } from './BinaryInput';
 export { PacmanDigits } from './PacmanDigits';
 export { DrunkInput } from './DrunkInput';
-export { ExistentialCaptcha } from './ExistentialCaptcha.tsx';
+export { ExistentialCaptcha } from './ExistentialCaptcha';

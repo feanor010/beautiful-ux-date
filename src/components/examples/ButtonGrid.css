@@ -1,6 +1,6 @@
 .button-grid {
   padding: 2rem;
-  background: #f5f5f5;
+  background: var(--card-bg);
   border-radius: 12px;
   max-width: 600px;
   margin: 0 auto;
@@ -19,13 +19,13 @@
 }
 
 .date-display .placeholder {
-  color: #ccc;
+  color: rgba(255, 255, 255, 0.45);
   min-width: 1.2rem;
   text-align: center;
 }
 
 .date-display .filled {
-  color: #333;
+  color: var(--text-color);
   min-width: 1.2rem;
   text-align: center;
 }

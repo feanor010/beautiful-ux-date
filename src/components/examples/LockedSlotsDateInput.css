@@ -1,0 +1,144 @@
+.locked-slots-date-input {
+  padding: 2rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.lsdi-top {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.lsdi-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.lsdi-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.lsdi-random,
+.lsdi-reset {
+  padding: 0.7rem 1rem;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.15s, background 0.15s;
+}
+
+.lsdi-random {
+  background: #007bff;
+  color: white;
+}
+
+.lsdi-random:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+}
+
+.lsdi-reset {
+  background: #dc3545;
+  color: white;
+}
+
+.lsdi-reset:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+.lsdi-slots {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.lsdi-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.lsdi-input {
+  width: 46px;
+  height: 56px;
+  text-align: center;
+  font-size: 26px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s, transform 0.15s;
+  background: white;
+  color: #37314a;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+/* no focus styles: it's not an actual input anymore */
+
+.lsdi-input.locked {
+  background: #f0f0f0;
+  color: #666;
+  border-color: #d6d6d6;
+}
+
+.lsdi-lock {
+  width: 46px;
+  height: 36px;
+  border: 2px solid #e3e3e3;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, border-color 0.15s;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lsdi-lock:hover {
+  border-color: #cfcfcf;
+  transform: translateY(-1px);
+}
+
+.lsdi-lock.locked {
+  border-color: rgba(102, 126, 234, 0.45);
+  background: rgba(102, 126, 234, 0.08);
+}
+
+.lsdi-sep {
+  font-size: 28px;
+  font-weight: 800;
+  color: #999;
+  padding: 0 0.25rem;
+  margin-top: 12px; /* align with input row */
+}
+
+@media (max-width: 520px) {
+  .lsdi-input,
+  .lsdi-lock {
+    width: 42px;
+  }
+  .lsdi-input {
+    height: 52px;
+    font-size: 24px;
+  }
+}
+
