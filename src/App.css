@@ -100,6 +100,57 @@
   align-items: flex-start;
 }
 
+.instruction-container {
+  width: 100%;
+  max-width: 640px;
+  padding: 2rem;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.3s ease-in;
+}
+
+.instruction-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.8rem;
+  color: var(--text-color);
+}
+
+.instruction-intro {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+.instruction-rules {
+  margin: 0 0 2rem 0;
+  padding-left: 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-color);
+}
+
+.instruction-rules li {
+  margin-bottom: 0.5rem;
+}
+
+.instruction-start-button {
+  padding: 1rem 2.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background: white;
+  color: var(--card-bg);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.instruction-start-button:hover {
+  transform: translateY(-2px);
+}
+
 .example-container {
   width: 100%;
   max-width: 1200px;
@@ -133,6 +184,24 @@
 
 .next-button:hover {
   transform: translateY(-2px);
+}
+
+.credits-trigger-button {
+  display: block;
+  margin: 1.5rem auto 0;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  background: rgba(132, 115, 233, 0.2);
+  color: var(--card-bg);
+  border: 1px solid var(--card-bg);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.credits-trigger-button:hover {
+  background: rgba(132, 115, 233, 0.35);
 }
 
 .next-button:active {
