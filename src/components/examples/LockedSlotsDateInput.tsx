@@ -2,14 +2,9 @@ import { useCallback, useRef, useState } from 'react';
 import './LockedSlotsDateInput.css';
 import { Fireworks } from '../Fireworks';
 import { getCelebrationMessage } from '../../utils/celebrations';
-import { getTargetDigitSlots } from '../../config/targetDate';
 import type { DateInputExampleProps } from '../../types';
 
 const DIGIT_COUNT = 8; // DDMMYYYY (without separators)
-const TARGET_DIGITS = getTargetDigitSlots();
-
-const isSpecialDigits = (digits: string[]) =>
-  digits.length === DIGIT_COUNT && digits.every((d, i) => d === TARGET_DIGITS[i]);
 
 const randomDigit = () => String(Math.floor(Math.random() * 10));
 
@@ -56,7 +51,7 @@ export const LockedSlotsDateInput = ({ onDateCorrect, onDateComplete }: DateInpu
         onDateCorrect?.(false);
       }
     },
-    [onDateCorrect],
+    [onDateCorrect, onDateComplete],
   );
 
   const toggleLock = useCallback(
@@ -75,27 +70,13 @@ export const LockedSlotsDateInput = ({ onDateCorrect, onDateComplete }: DateInpu
       if (!locked[i]) unlockedIndices.push(i);
     }
 
-    const tries = 50;
     let nextDigits = [...digits];
-    for (let attempt = 0; attempt < tries; attempt += 1) {
-      const next = [...digits];
-      for (let i = 0; i < DIGIT_COUNT; i += 1) {
-        if (locked[i]) continue;
-        next[i] = randomDigit();
-      }
-
-      // Guard: never randomly generate the target date digits.
-      if (!isSpecialDigits(next)) {
-        nextDigits = next;
-        break;
-      }
-
-      // If all slots are locked and already equal target, we can't change it.
-      if (unlockedIndices.length === 0) {
-        nextDigits = next;
-        break;
-      }
+    const next = [...digits];
+    for (let i = 0; i < DIGIT_COUNT; i += 1) {
+      if (locked[i]) continue;
+      next[i] = randomDigit();
     }
+    nextDigits = next;
 
     setDigits(nextDigits);
     evaluateAndNotify(nextDigits, locked);
