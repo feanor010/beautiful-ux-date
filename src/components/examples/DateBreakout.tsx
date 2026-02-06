@@ -36,12 +36,12 @@ const getRandomDigits = (count: number): string[] => {
   return digits.slice(0, count);
 };
 
-const randomBallVelocity = (): { vx: number; vy: number } => {
+const randomBallVelocity = (speed: number): { vx: number; vy: number } => {
   const angleDeg = -140 + Math.random() * 100;
   const angleRad = (angleDeg * Math.PI) / 180;
   return {
-    vx: BALL_SPEED * Math.cos(angleRad),
-    vy: BALL_SPEED * Math.sin(angleRad),
+    vx: speed * Math.cos(angleRad),
+    vy: speed * Math.sin(angleRad),
   };
 };
 
@@ -63,12 +63,19 @@ interface FallingDigit {
   vy: number;
 }
 
-const BALL_SPEED = 5;
 const PADDLE_SPEED = 10;
-const FALL_SPEED = 2.5;
+const DEFAULT_BALL_SPEED = 5;
+const DEFAULT_FALL_SPEED = 2.5;
+const BALL_SPEED_MIN = 1;
+const BALL_SPEED_MAX = 15;
+const FALL_SPEED_MIN = 0.5;
+const FALL_SPEED_MAX = 10;
 
 export const DateBreakout = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [ballSpeed, setBallSpeed] = useState(DEFAULT_BALL_SPEED);
+  const [fallSpeed, setFallSpeed] = useState(DEFAULT_FALL_SPEED);
+  const speedsRef = useRef({ ballSpeed: DEFAULT_BALL_SPEED, fallSpeed: DEFAULT_FALL_SPEED });
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
@@ -106,6 +113,11 @@ export const DateBreakout = ({ onDateCorrect, onDateComplete }: DateInputExample
 
   const keysRef = useRef({ left: false, right: false });
   const animationRef = useRef<number>(0);
+
+  useEffect(() => {
+    speedsRef.current.ballSpeed = ballSpeed;
+    speedsRef.current.fallSpeed = fallSpeed;
+  }, [ballSpeed, fallSpeed]);
 
   const initBlocks = useCallback((): Block[] => {
     const blocks: Block[] = [];
@@ -152,7 +164,7 @@ export const DateBreakout = ({ onDateCorrect, onDateComplete }: DateInputExample
 
   const startGame = useCallback(() => {
     const blocks = initBlocks();
-    const { vx, vy } = randomBallVelocity();
+    const { vx, vy } = randomBallVelocity(speedsRef.current.ballSpeed);
     stateRef.current = {
       paddleX: (GAME_WIDTH - PADDLE_WIDTH) / 2,
       paddleWidth: PADDLE_WIDTH,
@@ -242,7 +254,7 @@ export const DateBreakout = ({ onDateCorrect, onDateComplete }: DateInputExample
             return 0;
           } else {
             // Перезапуск мяча
-            const { vx, vy } = randomBallVelocity();
+            const { vx, vy } = randomBallVelocity(speedsRef.current.ballSpeed);
             s.ballX = GAME_WIDTH / 2;
             s.ballY = GAME_HEIGHT - 80;
             s.ballVx = vx;
@@ -269,7 +281,7 @@ export const DateBreakout = ({ onDateCorrect, onDateComplete }: DateInputExample
       ) {
         const hitPos = (s.ballX - s.paddleX) / s.paddleWidth;
         s.ballVy = -Math.abs(s.ballVy);
-        s.ballVx = (hitPos - 0.5) * 2 * BALL_SPEED;
+        s.ballVx = (hitPos - 0.5) * 2 * speedsRef.current.ballSpeed;
       }
 
       // Blocks - проверка коллизий (используем targetY для точности)
@@ -289,7 +301,7 @@ export const DateBreakout = ({ onDateCorrect, onDateComplete }: DateInputExample
             digit: b.digit,
             x: b.x + BLOCK_WIDTH / 2 - 12,
             y: b.y,
-            vy: FALL_SPEED,
+            vy: speedsRef.current.fallSpeed,
           });
         }
       });
@@ -620,11 +632,49 @@ export const DateBreakout = ({ onDateCorrect, onDateComplete }: DateInputExample
     return <Fireworks onComplete={handleFireworksComplete} message={celebrationMessage ?? 'Ура!'} />;
   }
 
+  const clampBallSpeed = (v: number) =>
+    Math.min(BALL_SPEED_MAX, Math.max(BALL_SPEED_MIN, v));
+  const clampFallSpeed = (v: number) =>
+    Math.min(FALL_SPEED_MAX, Math.max(FALL_SPEED_MIN, v));
+
   return (
     <div className="date-breakout">
       <p className="date-breakout-desc">
         Управление: ← → или мышь. Курсор заперт в области игры до проигрыша или Esc.
       </p>
+
+      <div className="date-breakout-settings">
+        <label className="date-breakout-setting">
+          <span className="date-breakout-setting-label">Скорость мяча</span>
+          <input
+            type="number"
+            min={BALL_SPEED_MIN}
+            max={BALL_SPEED_MAX}
+            step={0.5}
+            value={ballSpeed}
+            onChange={(e) => {
+              const v = parseFloat(e.target.value);
+              if (!Number.isNaN(v)) setBallSpeed(clampBallSpeed(v));
+            }}
+            className="date-breakout-input"
+          />
+        </label>
+        <label className="date-breakout-setting">
+          <span className="date-breakout-setting-label">Скорость падения цифр</span>
+          <input
+            type="number"
+            min={FALL_SPEED_MIN}
+            max={FALL_SPEED_MAX}
+            step={0.5}
+            value={fallSpeed}
+            onChange={(e) => {
+              const v = parseFloat(e.target.value);
+              if (!Number.isNaN(v)) setFallSpeed(clampFallSpeed(v));
+            }}
+            className="date-breakout-input"
+          />
+        </label>
+      </div>
 
       <div className="date-breakout-status">
         <div className="status-row">
