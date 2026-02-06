@@ -1,0 +1,78 @@
+.credits-step {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 1000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  perspective: 400px;
+}
+
+.credits-crawl-wrap {
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  height: calc(100% - 5rem);
+  overflow: hidden;
+}
+
+.credits-crawl {
+  position: absolute;
+  bottom: -20%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  animation: creditsCrawl 12s linear forwards;
+  transform-origin: center bottom;
+}
+
+@keyframes creditsCrawl {
+  0% {
+    transform: translateY(0) rotateX(20deg);
+  }
+  100% {
+    transform: translateY(-120%) rotateX(20deg);
+  }
+}
+
+.credits-line {
+  margin: 0;
+  padding: 0.5rem 0;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: #f5f5f5;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.credits-line-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.credits-back {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.credits-back:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
