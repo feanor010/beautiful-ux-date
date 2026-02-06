@@ -1,73 +1,66 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
 import './Fireworks.css';
 
 interface FireworksProps {
   onComplete?: () => void;
   message?: string;
+  variant?: 'full' | 'corner' | 'sides';
+  showText?: boolean;
 }
 
-interface Particle {
-  id: number;
-  x: number;
-  y: number;
-  tx: number;
-  ty: number;
-  color: string;
-  delay: number;
-}
-
-export const Fireworks = ({ onComplete, message = 'Ура!' }: FireworksProps) => {
-  const [particles, setParticles] = useState<Particle[]>([]);
+export const Fireworks = ({
+  onComplete,
+  message = 'Ура!',
+  variant = 'full',
+  showText = true,
+}: FireworksProps) => {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
-    const newParticles: Particle[] = [];
-    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff8800', '#8800ff'];
+    if (!canvasRef.current) return;
+    const myConfetti = confetti.create(canvasRef.current, { resize: true, useWorker: true });
+    const duration = 2500;
+    const end = Date.now() + duration;
 
-    for (let i = 0; i < 150; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const velocity = 100 + Math.random() * 300;
-
-      newParticles.push({
-        id: i,
-        x: 50,
-        y: 50,
-        tx: Math.cos(angle) * velocity,
-        ty: Math.sin(angle) * velocity,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        delay: Math.random() * 0.5,
+    const fire = (originX: number) => {
+      myConfetti({
+        particleCount: 40,
+        spread: 60,
+        startVelocity: 35,
+        gravity: 0.8,
+        origin: { x: originX, y: 0.5 },
       });
-    }
+    };
 
-    setParticles(newParticles);
+    const interval = setInterval(() => {
+      if (Date.now() > end) {
+        clearInterval(interval);
+        if (onComplete) onComplete();
+        return;
+      }
+      if (variant === 'corner') {
+        fire(0.85);
+      } else if (variant === 'sides') {
+        fire(0.15);
+        fire(0.85);
+      } else {
+        fire(0.2);
+        fire(0.8);
+      }
+    }, 250);
 
-    const timer = setTimeout(() => {
-      if (onComplete) onComplete();
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [onComplete]);
+    return () => clearInterval(interval);
+  }, [onComplete, variant]);
 
   return (
-      <div className="fireworks-overlay">
+    <div className={`fireworks-overlay ${variant}`}>
+      {showText && (
         <div className="celebration-text">
           🎉 {message} 🎉
         </div>
-        {particles.map((p) => (
-            <div
-                key={p.id}
-                className="firework-particle animate"
-                style={{
-                  left: `${p.x}%`,
-                  top: `${p.y}%`,
-                  backgroundColor: p.color,
-                  boxShadow: `0 0 10px ${p.color}, 0 0 20px ${p.color}`,
-                  animationDelay: `${p.delay}s`,
-                  // @ts-ignore
-                  '--tx': `${p.tx}px`,
-                  '--ty': `${p.ty}px`,
-                }}
-            />
-        ))}
-      </div>
+      )}
+      <canvas ref={canvasRef} className="fireworks-canvas" />
+    </div>
   );
 };

@@ -11,3 +11,4 @@ export { ExistentialCaptcha } from './ExistentialCaptcha';
 export { PhilosophicalQuiz } from './PhilosophicalQuiz';
 export { AstroDateInput } from '../AstroDateInput';
 export { DateBreakout } from './DateBreakout';
+export { SecretLevel } from './SecretLevel';

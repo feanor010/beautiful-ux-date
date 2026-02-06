@@ -14,7 +14,7 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return shuffled;
 };
 
-export const ProgressiveSelects = ({ onDateCorrect }: DateInputExampleProps) => {
+export const ProgressiveSelects = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
@@ -132,6 +132,7 @@ export const ProgressiveSelects = ({ onDateCorrect }: DateInputExampleProps) => 
   useEffect(() => {
     if (day && month && year) {
       const dateStr = `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`;
+      onDateComplete?.(dateStr);
       const message = getCelebrationMessage(dateStr);
       if (message) {
         if (!isCorrect || celebrationMessage !== message) {

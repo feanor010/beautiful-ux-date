@@ -4,7 +4,7 @@ import { Fireworks } from '../Fireworks';
 import type { DateInputExampleProps } from '../../types';
 import { getCelebrationMessage } from "../../utils/celebrations.ts";
 
-export const DrunkInput = ({ onDateCorrect }: DateInputExampleProps) => {
+export const DrunkInput = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [drunkPos, setDrunkPos] = useState({ x: 0, y: 0 });
     const [isSober, setIsSober] = useState(false);
@@ -91,6 +91,7 @@ export const DrunkInput = ({ onDateCorrect }: DateInputExampleProps) => {
 
     const handleSubmit = () => {
         const dateStr = `${values.day.padStart(2, '0')}.${values.month.padStart(2, '0')}.${values.year}`;
+        onDateComplete?.(dateStr);
         const message = getCelebrationMessage(dateStr);
 
         if (message) {

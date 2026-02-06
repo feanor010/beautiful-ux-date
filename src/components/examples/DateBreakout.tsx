@@ -67,7 +67,7 @@ const BALL_SPEED = 5;
 const PADDLE_SPEED = 10;
 const FALL_SPEED = 2.5;
 
-export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
+export const DateBreakout = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
@@ -309,6 +309,7 @@ export const DateBreakout = ({ onDateCorrect }: DateInputExampleProps) => {
             // Проверяем дату только если собрано ровно 8 цифр (полная дата)
             if (newCollected.length === 8) {
               const dateStr = formatCollected(newCollected);
+              onDateComplete?.(dateStr);
               console.log('[DateBreakout] Проверка полной даты:', dateStr, 'Собрано цифр:', newCollected.length, 'Цифры:', newCollected);
               const message = getCelebrationMessage(dateStr);
               console.log('[DateBreakout] Результат проверки:', message ? 'ПРАВИЛЬНАЯ ДАТА' : 'НЕПРАВИЛЬНАЯ ДАТА', 'message:', message);

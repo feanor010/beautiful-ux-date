@@ -166,7 +166,7 @@ const isValidDateStr = (str: string): boolean => {
   return d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day;
 };
 
-export const AstroDateInput = ({ onDateCorrect }: DateInputExampleProps) => {
+export const AstroDateInput = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
   const [step, setStep] = useState(0);
   const [selections, setSelections] = useState<Selections>(INITIAL_SELECTIONS);
   const [candidateDates, setCandidateDates] = useState<string[]>([]);
@@ -213,6 +213,7 @@ export const AstroDateInput = ({ onDateCorrect }: DateInputExampleProps) => {
   };
 
   const checkFinalDate = (date: string) => {
+    onDateComplete?.(date);
     const message = getCelebrationMessage(date);
     if (message) {
       setCelebrationMessage(message);

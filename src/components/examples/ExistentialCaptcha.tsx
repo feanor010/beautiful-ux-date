@@ -23,7 +23,7 @@ const PROMPTS = [
     "Выберите изображения, которые вызывают желание смотреть в стену часами."
 ];
 
-export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => {
+export const ExistentialCaptcha = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
     const [date, setDate] = useState('');
     const [showCaptcha, setShowCaptcha] = useState(false);
     const [selected, setSelected] = useState<number[]>([]);
@@ -55,6 +55,7 @@ export const ExistentialCaptcha = ({ onDateCorrect }: DateInputExampleProps) => 
 
         if (isSadEnough) {
             setShowCaptcha(false);
+            onDateComplete?.(date);
             const message = getCelebrationMessage(date);
             if (message) {
                 setCelebrationMessage(message);

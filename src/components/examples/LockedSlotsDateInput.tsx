@@ -18,7 +18,7 @@ const buildDateString = (digits: string[]) => {
   return `${safe(0)}${safe(1)}.${safe(2)}${safe(3)}.${safe(4)}${safe(5)}${safe(6)}${safe(7)}`;
 };
 
-export const LockedSlotsDateInput = ({ onDateCorrect }: DateInputExampleProps) => {
+export const LockedSlotsDateInput = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
   const [digits, setDigits] = useState<string[]>(() => Array(DIGIT_COUNT).fill(''));
   const [locked, setLocked] = useState<boolean[]>(() => Array(DIGIT_COUNT).fill(false));
   const [showFireworks, setShowFireworks] = useState(false);
@@ -41,6 +41,7 @@ export const LockedSlotsDateInput = ({ onDateCorrect }: DateInputExampleProps) =
         return;
       }
       const dateStr = buildDateString(nextDigits);
+      onDateComplete?.(dateStr);
       const message = getCelebrationMessage(dateStr);
       const match = !!message;
       if (lastMatchRef.current === match && (match ? lastMessageRef.current === message : true)) return;

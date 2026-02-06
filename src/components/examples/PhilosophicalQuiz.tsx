@@ -23,7 +23,7 @@ const formatDateForCelebration = (date: string): string => {
   return date;
 };
 
-export const PhilosophicalQuiz = ({ onDateCorrect }: DateInputExampleProps) => {
+export const PhilosophicalQuiz = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<string[]>(() => QUESTIONS.map(() => ''));
   const [date, setDate] = useState('');
@@ -50,6 +50,7 @@ export const PhilosophicalQuiz = ({ onDateCorrect }: DateInputExampleProps) => {
 
   const handleSubmitDate = () => {
     const formatted = formatDateForCelebration(date);
+    if (formatted) onDateComplete?.(formatted);
     const message = getCelebrationMessage(formatted);
     if (!message) return;
     setCelebrationMessage(message);

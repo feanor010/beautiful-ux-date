@@ -6,7 +6,7 @@ import { getCelebrationMessage } from "../../utils/celebrations.ts";
 
 const BITS = [2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1];
 
-export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
+export const BinaryInput = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
     const [switches, setSwitches] = useState<boolean[]>(new Array(12).fill(false));
     const [stage, setStage] = useState<'day' | 'month' | 'year' | 'done'>('day');
     const [values, setValues] = useState({ day: '', month: '', year: '' });
@@ -67,6 +67,7 @@ export const BinaryInput = ({ onDateCorrect }: DateInputExampleProps) => {
 
     const checkFinalDate = (finalValues: { day: string, month: string, year: string }) => {
         const dateStr = `${finalValues.day.padStart(2, '0')}.${finalValues.month.padStart(2, '0')}.${finalValues.year}`;
+        onDateComplete?.(dateStr);
         const message = getCelebrationMessage(dateStr);
 
         if (message) {

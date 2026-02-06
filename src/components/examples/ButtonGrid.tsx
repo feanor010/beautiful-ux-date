@@ -42,7 +42,7 @@ const generateNumbers = (): string[] => {
   }
 };
 
-export const ButtonGrid = ({ onDateCorrect }: DateInputExampleProps) => {
+export const ButtonGrid = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
   const [date, setDate] = useState<string>('__.__.____');
   const [numbers, setNumbers] = useState<string[]>(() => generateNumbers());
   const [showFireworks, setShowFireworks] = useState(false);
@@ -78,6 +78,7 @@ export const ButtonGrid = ({ onDateCorrect }: DateInputExampleProps) => {
     setDate(finalDate);
 
     if (!finalDate.includes('_')) {
+      onDateComplete?.(finalDate);
       const message = getCelebrationMessage(finalDate);
       if (message) {
         if (!isCorrect || celebrationMessage !== message) {

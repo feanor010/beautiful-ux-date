@@ -6,10 +6,15 @@ import {
   LockedSlotsDateInput,
   DateBreakout,
   ProgressiveSelects,
-  PacmanDigits, DrunkInput, ExistentialCaptcha, PhilosophicalQuiz,
+  PacmanDigits,
+  DrunkInput,
+  ExistentialCaptcha,
+  PhilosophicalQuiz,
+  SecretLevel,
 } from '../components/examples';
+import { secretLevel } from '../config/secretLevel';
 
-export const examples: DateInputExample[] = [
+export const baseExamples: DateInputExample[] = [
   {
     id: 'button-grid',
     title: 'Кнопки в случайном порядке',
@@ -71,3 +76,11 @@ export const examples: DateInputExample[] = [
     component: PhilosophicalQuiz,
   },
 ];
+
+export const secretExample: DateInputExample = {
+  id: 'secret-annie',
+  title: secretLevel.title,
+  description: '',
+  component: SecretLevel,
+  navLabel: secretLevel.navLabel,
+};

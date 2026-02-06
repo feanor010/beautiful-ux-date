@@ -56,7 +56,7 @@ const createPills = () => {
   return pills;
 };
 
-export const PacmanDigits = ({ onDateCorrect }: DateInputExampleProps) => {
+export const PacmanDigits = ({ onDateCorrect, onDateComplete }: DateInputExampleProps) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const playerRef = useRef<Position>({ x: 1, y: 1 });
   const enemyRefs = useRef<Position[]>([
@@ -174,6 +174,7 @@ export const PacmanDigits = ({ onDateCorrect }: DateInputExampleProps) => {
     if (nextCollected.length === TARGET_LENGTH) {
       isWinRef.current = true;
       const dateStr = `${nextCollected[0]}${nextCollected[1]}.${nextCollected[2]}${nextCollected[3]}.${nextCollected[4]}${nextCollected[5]}${nextCollected[6]}${nextCollected[7]}`;
+      onDateComplete?.(dateStr);
       const message = getCelebrationMessage(dateStr);
       if (message) {
         isCorrectRef.current = true;

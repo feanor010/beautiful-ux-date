@@ -66,6 +66,14 @@
   color: #333;
 }
 
+.nav-button.secret {
+  width: auto;
+  height: 50px;
+  padding: 0 1rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+}
+
 .nav-button:hover {
   transform: translateY(-2px);
 }
@@ -77,6 +85,11 @@
 
 .nav-number {
   display: block;
+}
+
+.nav-button.secret .nav-number {
+  font-size: 0.9rem;
+  letter-spacing: 0.05rem;
 }
 
 .app-main {
