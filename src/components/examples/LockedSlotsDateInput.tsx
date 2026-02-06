@@ -65,21 +65,13 @@ export const LockedSlotsDateInput = ({ onDateCorrect, onDateComplete }: DateInpu
   );
 
   const handleRandomize = useCallback(() => {
-    const unlockedIndices: number[] = [];
-    for (let i = 0; i < DIGIT_COUNT; i += 1) {
-      if (!locked[i]) unlockedIndices.push(i);
-    }
-
-    let nextDigits = [...digits];
     const next = [...digits];
     for (let i = 0; i < DIGIT_COUNT; i += 1) {
       if (locked[i]) continue;
       next[i] = randomDigit();
     }
-    nextDigits = next;
-
-    setDigits(nextDigits);
-    evaluateAndNotify(nextDigits, locked);
+    setDigits(next);
+    evaluateAndNotify(next, locked);
   }, [digits, evaluateAndNotify, locked]);
 
   const handleReset = useCallback(() => {
